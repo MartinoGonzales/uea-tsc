@@ -165,7 +165,7 @@ public Instances process(Instances inst) throws Exception {
 	
 		
             try{
-                Instances test=ClassifierTools.loadData("C:\\Users\\ajb\\Dropbox\\TSC Problems\\Beef\\Beef_TRAIN");
+                Instances test=ClassifierTools.loadData("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Downloads\\Beef\\Beef_TRAIN");
 //                Instances filter=new SummaryStats().process(test);
                SummaryStats m=new SummaryStats();
                m.setInputFormat(test);
