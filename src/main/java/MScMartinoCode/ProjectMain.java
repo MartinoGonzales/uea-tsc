@@ -169,7 +169,7 @@ public class ProjectMain {
         } else {
             // Run locally 
             datasetDir = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\";
-            outputDir  = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation_V2\\ResultsTemp\\";
+            outputDir  = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\ResultsTemp\\";
             set = '2';
             //datasetName = "LCdata";
             datasetName = "1000LCdata";
