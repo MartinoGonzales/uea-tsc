@@ -13,11 +13,11 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package experiments;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.JCommander.Builder;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
+//Martino - Commented to build code
+//import com.beust.jcommander.JCommander;
+//import com.beust.jcommander.JCommander.Builder;
+//import com.beust.jcommander.Parameter;
+//import com.beust.jcommander.Parameters;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,91 +99,91 @@ public class Experiments  {
     public static String LOXO_ATT_ID = "experimentsSplitAttribute";
     public static int numCVFolds = 10;
     public static double proportionKeptForTraining = 0.5;
-
-    @Parameters(separators = "=")
+//Martino - Commented to build code
+//    @Parameters(separators = "=")
     public static class ExperimentalArguments implements Runnable {
         
     //REQUIRED PARAMETERS
-        @Parameter(names={"-dp","--dataPath"}, required=true, order=0, description = "(String) The directory that contains the dataset to be evaluated on, in the form "
-                + "[--dataPath]/[--datasetName]/[--datasetname].arff (the actual arff file(s) may be in different forms, see Experiments.sampleDataset(...).")
+//        @Parameter(names={"-dp","--dataPath"}, required=true, order=0, description = "(String) The directory that contains the dataset to be evaluated on, in the form "
+//                + "[--dataPath]/[--datasetName]/[--datasetname].arff (the actual arff file(s) may be in different forms, see Experiments.sampleDataset(...).")
         public String dataReadLocation = null;
         
-        @Parameter(names={"-rp","--resultsPath"}, required=true, order=1, description = "(String) The parent directory to write the results of the evaluation to, in the form "
-                + "[--resultsPath]/[--classifierName]/Predictions/[--datasetName]/...")
+//        @Parameter(names={"-rp","--resultsPath"}, required=true, order=1, description = "(String) The parent directory to write the results of the evaluation to, in the form "
+//                + "[--resultsPath]/[--classifierName]/Predictions/[--datasetName]/...")
         public String resultsWriteLocation = null;
         
-        @Parameter(names={"-cn","--classifierName"}, required=true, order=2, description = "(String) The name of the classifier to evaluate. A case matching this value should exist within the ClassifierLists")
+//        @Parameter(names={"-cn","--classifierName"}, required=true, order=2, description = "(String) The name of the classifier to evaluate. A case matching this value should exist within the ClassifierLists")
         public String classifierName = null;
         
-        @Parameter(names={"-dn","--datasetName"}, required=true, order=3, description = "(String) The name of the dataset to be evaluated on, which resides within the dataPath in the form "
-                + "[--dataPath]/[--datasetName]/[--datasetname].arff (the actual arff file(s) may be of different forms, see Experiments.sampleDataset(...).")
+//        @Parameter(names={"-dn","--datasetName"}, required=true, order=3, description = "(String) The name of the dataset to be evaluated on, which resides within the dataPath in the form "
+//                + "[--dataPath]/[--datasetName]/[--datasetname].arff (the actual arff file(s) may be of different forms, see Experiments.sampleDataset(...).")
         public String datasetName = null;
         
-        @Parameter(names={"-f","--fold"}, required=true, order=4, description = "(int) The fold index for dataset resampling, also used as the rng seed. *Indexed from 1* to conform with cluster array "
-                + "job indices. The fold id pass will be automatically decremented to be zero-indexed internally.")
+//        @Parameter(names={"-f","--fold"}, required=true, order=4, description = "(int) The fold index for dataset resampling, also used as the rng seed. *Indexed from 1* to conform with cluster array "
+//                + "job indices. The fold id pass will be automatically decremented to be zero-indexed internally.")
         public int foldId = 0;
         
     //OPTIONAL PARAMETERS
-        @Parameter(names={"--help"}, hidden=true) //hidden from usage() printout
+//        @Parameter(names={"--help"}, hidden=true) //hidden from usage() printout
         private boolean help = false;
         
         //todo separate verbosity into it own thing
-        @Parameter(names={"-d","--debug"}, arity=1, description = "(boolean) Increases verbosity and turns on the printing of debug statements")
+//        @Parameter(names={"-d","--debug"}, arity=1, description = "(boolean) Increases verbosity and turns on the printing of debug statements")
         public boolean debug = false;
         
-        @Parameter(names={"-gtf","--genTrainFiles"}, arity=1, description = "(boolean) Turns on the production of trainFold[fold].csv files, the results of which are calculate either via a cross validation of "
-                + "the train data, or if a classifier implements the TrainAccuracyEstimate interface, the classifier will write its own estimate via its own means of evaluation.")
+//        @Parameter(names={"-gtf","--genTrainFiles"}, arity=1, description = "(boolean) Turns on the production of trainFold[fold].csv files, the results of which are calculate either via a cross validation of "
+//                + "the train data, or if a classifier implements the TrainAccuracyEstimate interface, the classifier will write its own estimate via its own means of evaluation.")
         public boolean generateErrorEstimateOnTrainSet = false;
         
-        @Parameter(names={"-cp","--checkpointing"}, arity=1, description = "(boolean) Turns on the usage of checkpointing, if the classifier implements the SaveParameterInfo and/or CheckpointClassifier interfaces. The "
-                + "classifier by default will write its checkpointing files to the same location as the --resultsPath, unless another path is optionally supplied to --checkpointPath.")
+//        @Parameter(names={"-cp","--checkpointing"}, arity=1, description = "(boolean) Turns on the usage of checkpointing, if the classifier implements the SaveParameterInfo and/or CheckpointClassifier interfaces. The "
+//                + "classifier by default will write its checkpointing files to the same location as the --resultsPath, unless another path is optionally supplied to --checkpointPath.")
         public boolean checkpointing = false;
         
-        @Parameter(names={"-sp","--supportingFilePath"}, description = "(String) Specifies the directory to write any files that may be produced by the classifier if it is a FileProducer. This includes but may not be "
-                + "limited to: parameter evaluations, checkpoints, and logs. By default, these files are written to a generated subdirectory in the same location that the train and testFold[fold] files are written, relative"
-                + "the --resultsPath. If a path is supplied via this parameter however, the files shall be written to that precisely that directory, as opposed to e.g. [-sp]/[--classifierName]/Predictions... "
-                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
+//        @Parameter(names={"-sp","--supportingFilePath"}, description = "(String) Specifies the directory to write any files that may be produced by the classifier if it is a FileProducer. This includes but may not be "
+//                + "limited to: parameter evaluations, checkpoints, and logs. By default, these files are written to a generated subdirectory in the same location that the train and testFold[fold] files are written, relative"
+//                + "the --resultsPath. If a path is supplied via this parameter however, the files shall be written to that precisely that directory, as opposed to e.g. [-sp]/[--classifierName]/Predictions... "
+//                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
         public String supportingFilePath = null;
         
-        @Parameter(names={"-pid","--parameterSplitIndex"}, description = "(Integer) If supplied and the classifier implements the ParameterSplittable interface, this execution of experiments will be set up to evaluate "
-                + "the parameter set -pid within the parameter space used by the classifier (whether that be a supplied space or default). How the integer -pid maps onto the parameter space is up to the classifier.")
+//        @Parameter(names={"-pid","--parameterSplitIndex"}, description = "(Integer) If supplied and the classifier implements the ParameterSplittable interface, this execution of experiments will be set up to evaluate "
+//                + "the parameter set -pid within the parameter space used by the classifier (whether that be a supplied space or default). How the integer -pid maps onto the parameter space is up to the classifier.")
         public Integer singleParameterID = null;
 
-        @Parameter(names={"-tb","--timingBenchmark"}, arity=1, description = "(boolean) Turns on the computation of a standard operation to act as a simple benchmark for the speed of computation on this hardware, which may "
-                + "optionally be used to normalise build/test/predictions times across hardware in later analysis. Expected time on Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz is ~0.8 seconds. For experiments that are likely to be very "
-                + "short, it is recommended to leave this off, as it will proportionally increase the total time to perform all your experiments by a great deal, and for short evaluation time the proportional affect of "
-                + "any processing noise may make any benchmark normalisation process unreliable anyway.")
+//        @Parameter(names={"-tb","--timingBenchmark"}, arity=1, description = "(boolean) Turns on the computation of a standard operation to act as a simple benchmark for the speed of computation on this hardware, which may "
+//                + "optionally be used to normalise build/test/predictions times across hardware in later analysis. Expected time on Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz is ~0.8 seconds. For experiments that are likely to be very "
+//                + "short, it is recommended to leave this off, as it will proportionally increase the total time to perform all your experiments by a great deal, and for short evaluation time the proportional affect of "
+//                + "any processing noise may make any benchmark normalisation process unreliable anyway.")
         public boolean performTimingBenchmark = false;
         
         //todo expose the filetype enum in some way, currently just using an unconnected if statement, if e.g the order of the enum values changes in the classifierresults, which we have no knowledge 
         //of here, the ifs will call the wrong things. decide on the design of this 
-        @Parameter(names={"-ff","--fileFormat"}, description = "(int) Specifies the format for the classifier results file to be written in, accepted values = { 0, 1, 2 }, default = 0. 0 writes the first 3 lines of meta information "
-                + "as well as the full prediction information, and requires the most disk space. 1 writes the first three lines and a list of the performance metrics calculated from the prediction info. 2 writes the first three lines only, and "
-                + "requires the least space. Use options other than 0 if generating too many files with too much prediction information for the disk space available, however be aware that there is of course a loss of information.")
+//        @Parameter(names={"-ff","--fileFormat"}, description = "(int) Specifies the format for the classifier results file to be written in, accepted values = { 0, 1, 2 }, default = 0. 0 writes the first 3 lines of meta information "
+//                + "as well as the full prediction information, and requires the most disk space. 1 writes the first three lines and a list of the performance metrics calculated from the prediction info. 2 writes the first three lines only, and "
+//                + "requires the least space. Use options other than 0 if generating too many files with too much prediction information for the disk space available, however be aware that there is of course a loss of information.")
         public int classifierResultsFileFormat = 0;
 
-        @Parameter(names={"-ctrs","--contractTrainSecs"}, description = "(long) Defines a time limit, in seconds, for the training of the classifier if it implements the ContractClassifier interface. Defaults to 0, which sets "
-                + "no contract time. Only one of --contractTrainSecs, and --contractTrainHours should be supplied. If both are supplied, seconds takes preference over hours. "
-                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
+//        @Parameter(names={"-ctrs","--contractTrainSecs"}, description = "(long) Defines a time limit, in seconds, for the training of the classifier if it implements the ContractClassifier interface. Defaults to 0, which sets "
+//                + "no contract time. Only one of --contractTrainSecs, and --contractTrainHours should be supplied. If both are supplied, seconds takes preference over hours. "
+//                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
         public long contractTrainTimeSeconds = 0;
         
-        @Parameter(names={"-ctrh","--contractTrainHours"}, description = "(long) Defines a time limit, in hours, for the training of the classifier if it implements the ContractClassifier interface. Defaults to 0, which sets "
-                + "no contract time. Only one of --contractTimeNanos, --contractTimeMinutes, or --contractTimeHours should be supplied. If both are supplied, seconds hours takes preference over hours."
-                + "\n\n THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
+//        @Parameter(names={"-ctrh","--contractTrainHours"}, description = "(long) Defines a time limit, in hours, for the training of the classifier if it implements the ContractClassifier interface. Defaults to 0, which sets "
+//                + "no contract time. Only one of --contractTimeNanos, --contractTimeMinutes, or --contractTimeHours should be supplied. If both are supplied, seconds hours takes preference over hours."
+//                + "\n\n THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
         public long contractTrainTimeHours = 0;
         
-                @Parameter(names={"-ctem","--contractTestMillis"}, description = "(long) Defines a time limit, in miliseconds, for the time given to the classifier to make each test prediction if it implements the ContractablePredictions interface. "
-                + "Defaults to 0, which sets no contract time. Only one of --contractTestMillis and --contractTestSecs should be supplied. If both are supplied, milis takes preference over seconds. "
-                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
+//                @Parameter(names={"-ctem","--contractTestMillis"}, description = "(long) Defines a time limit, in miliseconds, for the time given to the classifier to make each test prediction if it implements the ContractablePredictions interface. "
+//                + "Defaults to 0, which sets no contract time. Only one of --contractTestMillis and --contractTestSecs should be supplied. If both are supplied, milis takes preference over seconds. "
+//                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
         public long contractPredTimeMillis = 0;
         
-        @Parameter(names={"-ctes","--contractTestSecs"}, description = "(long) Defines a time limit, in seconds, for the time given to the classifier to make each test prediction if it implements the ContractablePredictions interface. "
-                + "Defaults to 0, which sets no contract time. Only one of --contractTestMillis and --contractTestSecs should be supplied. If both are supplied, milis takes preference over seconds. "
-                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
+//        @Parameter(names={"-ctes","--contractTestSecs"}, description = "(long) Defines a time limit, in seconds, for the time given to the classifier to make each test prediction if it implements the ContractablePredictions interface. "
+//                + "Defaults to 0, which sets no contract time. Only one of --contractTestMillis and --contractTestSecs should be supplied. If both are supplied, milis takes preference over seconds. "
+//                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED WHEN INTERFACES AND SETCLASSIFIER ARE UPDATED.")
         public long contractPredTimeSeconds= 0;
         
-        @Parameter(names={"-sc","--serialiseClassifier"}, arity=1, description = "(boolean) If true, and the classifier is serialisable, the classifier will be serialised to the --supportingFilesPath after training, but before testing.  "
-                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED")
+//        @Parameter(names={"-sc","--serialiseClassifier"}, arity=1, description = "(boolean) If true, and the classifier is serialisable, the classifier will be serialised to the --supportingFilesPath after training, but before testing.  "
+//                + "THIS IS A PLACEHOLDER PARAMETER. TO BE FULLY IMPLEMENTED")
         public boolean serialiseTrainedClassifier = false;
         
         
@@ -261,12 +261,14 @@ public class Experiments  {
         }
         
         private void parseArguments(String[] args) throws Exception {
-            Builder b = JCommander.newBuilder();
-            b.addObject(this);
-            JCommander jc = b.build();
-            jc.setProgramName("Experiments.java");  //todo maybe add copyright etcetc
+//Martino - Commented to build code
+//            Builder b = JCommander.newBuilder();
+//            b.addObject(this);
+//            JCommander jc = b.build();
+//            jc.setProgramName("Experiments.java");  //todo maybe add copyright etcetc
             try {
-                jc.parse(args);
+//Martino - Commented to build code
+//                jc.parse(args);
             } catch (Exception e) {
                 if (!help) {
                     //we actually errored, instead of the program simply being called with the --help flag
@@ -275,7 +277,10 @@ public class Experiments  {
                     System.err.println("Parameters prefixed by a * are REQUIRED. These are the first five parameters, which are needed to run a basic experiment.");
                     System.err.println("Error: \n\t"+e+"\n\n");
                 }
-                jc.usage();
+//Martino - Commented to build code
+//                jc.usage();
+
+
 //                Thread.sleep(1000); //usage can take a second to print for some reason?... no idea what it's actually doing
 //                System.exit(1);
             }

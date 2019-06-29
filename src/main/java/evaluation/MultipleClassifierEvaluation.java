@@ -15,7 +15,8 @@
 package evaluation;
 
 import evaluation.storage.ClassifierResults;
-import ResultsProcessing.MatlabController;
+//Martino - Commented to build code
+//import ResultsProcessing.MatlabController;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -536,9 +537,9 @@ public class MultipleClassifierEvaluation implements DebugPrinting {
         printlnDebug("Writing started");
         ClassifierResultsAnalysis.performFullEvaluation(writePath, experimentName, metrics, results, datasets.toArray(new String[] { }), datasetGroupings);
         printlnDebug("Writing finished");
-        
-        if (buildMatlabDiagrams && closeMatlabConnectionWhenFinished)
-            MatlabController.getInstance().discconnectMatlab();
+//Martino - Commented to build code        
+//        if (buildMatlabDiagrams && closeMatlabConnectionWhenFinished)
+//            MatlabController.getInstance().discconnectMatlab();
     }
 
     public static void main(String[] args) throws Exception {

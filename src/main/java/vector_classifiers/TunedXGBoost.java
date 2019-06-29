@@ -20,10 +20,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ml.dmlc.xgboost4j.java.Booster;
-import ml.dmlc.xgboost4j.java.DMatrix;
-import ml.dmlc.xgboost4j.java.XGBoost;
-import ml.dmlc.xgboost4j.java.XGBoostError;
+//Martino - Commented to build code import ml.dmlc.xgboost4j.java.Booster;
+//Martino - Commented to build code import ml.dmlc.xgboost4j.java.DMatrix;
+//Martino - Commented to build code import ml.dmlc.xgboost4j.java.XGBoost;
+//Martino - Commented to build code import ml.dmlc.xgboost4j.java.XGBoostError;
 import timeseriesweka.classifiers.ParameterSplittable;
 import utilities.DebugPrinting;
 import utilities.TrainAccuracyEstimate;
@@ -71,12 +71,12 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
     int numAtts = -1;
     int numClasses = -1;
     Instances trainInsts = null;
-    DMatrix trainDMat = null;
+//Martino - Commented to build code  DMatrix trainDMat = null;
 
     //model
-    HashMap<String, DMatrix> watches = null;
+//Martino - Commented to build code   HashMap<String, DMatrix> watches = null;
     HashMap<String, Object> params = null;
-    Booster booster = null;
+//Martino - Commented to build code  Booster booster = null;
     ClassifierResults trainResults =new ClassifierResults();
 
     //hyperparameters - fixed
@@ -406,7 +406,7 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
         String objective = "multi:softprob"; 
 //        String objective = numClasses == 2 ? "binary:logistic" : "multi:softprob";
 
-        trainDMat = wekaInstancesToDMatrix(trainInsts);
+//Martino - Commented to build code     trainDMat = wekaInstancesToDMatrix(trainInsts);
         params = new HashMap<String, Object>();
         //todo: this is a mega hack to enforce 1 thread only on cluster (else bad juju).
         //fix some how at some point. 
@@ -428,7 +428,7 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
         params.put("max_depth", maxTreeDepth);
         params.put("min_child_weight", minChildWeight);
 
-        watches = new HashMap<String, DMatrix>();
+//Martino - Commented to build code    watches = new HashMap<String, DMatrix>();
 //        if (getDebugPrinting() || getDebug())
 //        watches.put("train", trainDMat);
 
@@ -437,7 +437,7 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
         //    numIts == 250   =>   stop after 25 increases in err
 
 //        booster = XGBoost.train(trainDMat, params, numIterations, watches, null, null, null, earlyStopping);
-        booster = XGBoost.train(trainDMat, params, numIterations, watches, null, null);
+//Martino - Commented to build code  booster = XGBoost.train(trainDMat, params, numIterations, watches, null, null);
 
     }
 
@@ -466,7 +466,7 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
 //        long startTime=System.nanoTime(); 
         long startTime=System.nanoTime(); 
 
-        booster = null;
+//Martino - Commented to build code    booster = null;
         trainResults =new ClassifierResults();
 
         trainInsts = new Instances(insts);
@@ -505,29 +505,29 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
         //converting inst to dmat form
         Instances instHolder = new Instances(trainInsts, 0);
         instHolder.add(inst);
-        DMatrix testInstMat = null;
+//Martino - Commented to build code    DMatrix testInstMat = null;
 
-        try {
-             testInstMat = wekaInstancesToDMatrix(instHolder);
-        } catch (XGBoostError ex) {
-            System.err.println("Error converting test inst to DMatrix form: \n" + ex);
-            System.exit(0);
-        }
+//Martino - Commented to build code      try {
+//Martino - Commented to build code        testInstMat = wekaInstancesToDMatrix(instHolder);
+//Martino - Commented to build code     } catch (XGBoostError ex) {
+//Martino - Commented to build code           System.err.println("Error converting test inst to DMatrix form: \n" + ex);
+//Martino - Commented to build code          System.exit(0);
+//Martino - Commented to build code       }
 
         //predicting, converting back to double[]
-        try {
-            float[][] predicts = booster.predict(testInstMat);
-            for (int c = 0; c < numClasses; c++) 
-                dist[c] = predicts[0][c];
-        } catch (XGBoostError ex) {
-            System.err.println("Error predicting test inst: \n" + ex);
-            System.exit(0);
-        }
+//Martino - Commented to build code     try {
+//Martino - Commented to build code       float[][] predicts = booster.predict(testInstMat);
+//Martino - Commented to build code     for (int c = 0; c < numClasses; c++) 
+//Martino - Commented to build code               dist[c] = predicts[0][c];
+//Martino - Commented to build code        } catch (XGBoostError ex) {
+//Martino - Commented to build code         System.err.println("Error predicting test inst: \n" + ex);
+//Martino - Commented to build code          System.exit(0);
+//Martino - Commented to build code      }
 
         return dist;
     }
 
-    public static DMatrix wekaInstancesToDMatrix(Instances insts) throws XGBoostError {
+    public static void /* //Martino - Commented to build code DMatrix */ wekaInstancesToDMatrix(Instances insts) { //Martino - Commented to build codethrows XGBoostError {
         int numRows = insts.numInstances();
         int numCols = insts.numAttributes()-1;
 
@@ -541,9 +541,9 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
             labels[i] = (float) insts.instance(i).classValue();
         }
 
-        DMatrix dmat = new DMatrix(data, numRows, numCols);
-        dmat.setLabel(labels);
-        return dmat;
+//Martino - Commented to build code DMatrix dmat = new DMatrix(data, numRows, numCols);
+//Martino - Commented to build code   dmat.setLabel(labels);
+//Martino - Commented to build code      return dmat;
     }
 
 
@@ -718,7 +718,7 @@ public class TunedXGBoost extends AbstractClassifier implements SaveParameterInf
                 //dont call normal build classifier, since that'll reinitialise 
                 //a bunch of stuff, including the booster itself. instead just 
                 //continue with a modified call to the trainer function
-                model.booster = XGBoost.train(model.trainDMat, model.params, newNumIterations - numIterations, model.watches, null, null, null, 0, model.booster);
+//Martino - Commented to build code             model.booster = XGBoost.train(model.trainDMat, model.params, newNumIterations - numIterations, model.watches, null, null, null, 0, model.booster);
             }
         }
 

@@ -169,15 +169,15 @@ public class ProjectMain {
         } else {
             // Run locally 
             datasetDir = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\";
-            outputDir  = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\ResultsTemp\\";
+            outputDir  = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation_V2\\ResultsTemp\\";
             set = '2';
             //datasetName = "LCdata";
-            //datasetName = "1000LCdata";
-            datasetName = "1000LCdata_multivariate";
+            datasetName = "1000LCdata";
+            //datasetName = "1000LCdata_multivariate";
             //datasetName = "binaryLCdata";
             standardiseF = false;
             outputF = true;
-            experiment = "NNED";
+            experiment = "MeansC";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;

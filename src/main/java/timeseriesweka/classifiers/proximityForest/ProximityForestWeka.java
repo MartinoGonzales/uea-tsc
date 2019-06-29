@@ -17,13 +17,13 @@
 
 package timeseriesweka.classifiers.proximityForest;
 
-import core.AppContext;
-import core.contracts.Dataset;
-import datasets.ListDataset;
-import evaluation.MultipleClassifierEvaluation;
+//Martino - Commented to build code import core.AppContext;
+//Martino - Commented to build code import core.contracts.Dataset;
+//Martino - Commented to build code import datasets.ListDataset;
+//Martino - Commented to build code import evaluation.MultipleClassifierEvaluation;
 import experiments.Experiments;
 import java.util.Random;
-import trees.ProximityForest;
+//Martino - Commented to build code import trees.ProximityForest;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -97,7 +97,7 @@ public class ProximityForestWeka extends AbstractClassifier {
     private int num_candidates_per_split = 5;   
     private boolean random_dm_per_node = true;  
     
-    public ProximityForest pf;
+//Martino - Commented to build code public ProximityForest pf;
     
     private int numClasses;
     Instances header;
@@ -130,21 +130,22 @@ public class ProximityForestWeka extends AbstractClassifier {
     }
         
     public void setSeed(int seed) { 
-        AppContext.rand_seed = seed;
-        AppContext.rand = new Random(seed);        
+//Martino - Commented to build code     AppContext.rand_seed = seed;
+//Martino - Commented to build code     AppContext.rand = new Random(seed);        
     }
     
     public int getSeed() { 
-        return (int)AppContext.rand_seed;
+//Martino - Commented to build code   return (int)AppContext.rand_seed;
+return 0;
     }
     
-    private Dataset toPFDataset(Instances insts) {
-        Dataset dset = new ListDataset(insts.numInstances());
+    private void /* //Martino - Commented to build code Dataset */toPFDataset(Instances insts) {
+//Martino - Commented to build code Dataset dset = new ListDataset(insts.numInstances());
         
-        for (Instance inst : insts)
-            dset.add((int)inst.classValue(), getSeries(inst));
+//Martino - Commented to build code   for (Instance inst : insts)
+//Martino - Commented to build code   dset.add((int)inst.classValue(), getSeries(inst));
         
-        return dset;
+//Martino - Commented to build code    return dset;
     }
     
     private double[] getSeries(Instance inst) {
@@ -160,16 +161,16 @@ public class ProximityForestWeka extends AbstractClassifier {
         numClasses = data.numClasses();
         header = new Instances(data,0);
                 
-        AppContext.num_trees = num_trees;
-        AppContext.num_candidates_per_split = num_candidates_per_split;
-        AppContext.random_dm_per_node = random_dm_per_node;
+//Martino - Commented to build code   AppContext.num_trees = num_trees;
+//Martino - Commented to build code    AppContext.num_candidates_per_split = num_candidates_per_split;
+//Martino - Commented to build code   AppContext.random_dm_per_node = random_dm_per_node;
         
-        pf = new ProximityForest((int) AppContext.rand_seed); //just an id 
+//Martino - Commented to build code  pf = new ProximityForest((int) AppContext.rand_seed); //just an id 
         
         
         //actual work
-        Dataset pfdata = toPFDataset(data);
-        pf.train(pfdata);
+//Martino - Commented to build code    Dataset pfdata = toPFDataset(data);
+//Martino - Commented to build code      pf.train(pfdata);
         
     }
     
@@ -183,7 +184,8 @@ public class ProximityForestWeka extends AbstractClassifier {
 //        ProximityForestResult pfres = pf.test(dset);
 //        
         
-        return pf.predict_proba(getSeries(inst), numClasses);
+//Martino - Commented to build code   return pf.predict_proba(getSeries(inst), numClasses);
+return new double[1];
     }
     
     
@@ -235,13 +237,13 @@ public class ProximityForestWeka extends AbstractClassifier {
         }
         
         
-        MultipleClassifierEvaluation mce = new MultipleClassifierEvaluation(exp.resultsWriteLocation +"ANA/", "sanityCheck", numFolds);
-        mce.setBuildMatlabDiagrams(false);
-        mce.setTestResultsOnly(true);
-        mce.setDatasets(datasets);
-        mce.readInClassifier(exp.classifierName, exp.resultsWriteLocation);
+//Martino - Commented to build code   MultipleClassifierEvaluation mce = new MultipleClassifierEvaluation(exp.resultsWriteLocation +"ANA/", "sanityCheck", numFolds);
+//Martino - Commented to build code      mce.setBuildMatlabDiagrams(false);
+//Martino - Commented to build code      mce.setTestResultsOnly(true);
+//Martino - Commented to build code     mce.setDatasets(datasets);
+//Martino - Commented to build code    mce.readInClassifier(exp.classifierName, exp.resultsWriteLocation);
 //        mce.readInClassifier("DTWCV", "Z:/Results_7_2_19/FinalisedRepo/"); //no probs, leaving it 
-        mce.readInClassifier("RotF", "Z:/Results_7_2_19/FinalisedRepo/");
-        mce.runComparison();
+//Martino - Commented to build code      mce.readInClassifier("RotF", "Z:/Results_7_2_19/FinalisedRepo/");
+//Martino - Commented to build code     mce.runComparison();
     }
 }

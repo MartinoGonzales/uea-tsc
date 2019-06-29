@@ -17,12 +17,13 @@ package timeseriesweka.classifiers;
 
 import evaluation.evaluators.CrossValidationEvaluator;
 import evaluation.storage.ClassifierResults;
-import com.carrotsearch.hppc.*;
-import com.carrotsearch.hppc.cursors.IntCursor;
-import com.carrotsearch.hppc.cursors.IntIntCursor;
-import com.carrotsearch.hppc.cursors.LongFloatCursor;
-import de.bwaldvogel.liblinear.*;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+//Martino - Commented to build code
+//import com.carrotsearch.hppc.*;
+//import com.carrotsearch.hppc.cursors.IntCursor;
+//import com.carrotsearch.hppc.cursors.IntIntCursor;
+//import com.carrotsearch.hppc.cursors.LongFloatCursor;
+//import de.bwaldvogel.liblinear.*;
+//import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 import fileIO.OutFile;
 import timeseriesweka.classifiers.cote.HiveCoteModule;
 import utilities.*;
@@ -71,7 +72,8 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
   public static double p = 0.1;
   public static int iterations = 5000;
   public static double c = 1;
-  public static SolverType solverType = SolverType.L2R_LR_DUAL;
+//Martino - Commented to build code
+//  public static SolverType solverType = SolverType.L2R_LR_DUAL;
 
   private double trainAcc = -1;
 
@@ -114,13 +116,14 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
     public WEASELModel(
         boolean normed,
         int features,
-        WEASELTransform model,
-        de.bwaldvogel.liblinear.Model linearModel
+        WEASELTransform model
+//Martino - Commented to build code
+//        ,de.bwaldvogel.liblinear.Model linearModel
     ) {
       this.normed = normed;
       this.features = features;
       this.weasel = model;
-      this.linearModel = linearModel;
+//Martino - Commented to build code      this.linearModel = linearModel;
     }
     public boolean normed;
 
@@ -131,7 +134,8 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
     public WEASELTransform weasel;
 
     // the trained liblinear classifier
-    public de.bwaldvogel.liblinear.Model linearModel;
+//Martino - Commented to build code
+//    public de.bwaldvogel.liblinear.Model linearModel;
   }
 
   /**
@@ -184,43 +188,44 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
     return labels;
   }
 
-  protected static Problem initLibLinearProblem(
+  protected static void /*//Martino - Commented to build code Problem*/ initLibLinearProblem(
       final WEASELTransform.BagOfBigrams[] bob,
       final WEASELTransform.Dictionary dict,
       final double bias) {
-    Linear.resetRandom();
+//Martino - Commented to build code
+//    Linear.resetRandom();
 
-    Problem problem = new Problem();
-    problem.bias = bias;
-    problem.n = dict.size() + 1;
-    problem.y = getLabels(bob);
+//    Problem problem = new Problem();
+//    problem.bias = bias;
+//    problem.n = dict.size() + 1;
+//    problem.y = getLabels(bob);
 
-    final FeatureNode[][] features = initLibLinear(bob, problem.n);
-
-    problem.l = features.length;
-    problem.x = features;
-    return problem;
+//    final FeatureNode[][] features = initLibLinear(bob, problem.n);
+//
+//    problem.l = features.length;
+//    problem.x = features;
+//    return problem;
   }
 
-  protected static FeatureNode[][] initLibLinear(final WEASELTransform.BagOfBigrams[] bob, int max_feature) {
-    FeatureNode[][] featuresTrain = new FeatureNode[bob.length][];
-    for (int j = 0; j < bob.length; j++) {
-      WEASELTransform.BagOfBigrams bop = bob[j];
-      ArrayList<FeatureNode> features = new ArrayList<>(bop.bob.size());
-      for (IntIntCursor word : bop.bob) {
-        if (word.value > 0 && word.key <= max_feature) {
-          features.add(new FeatureNode(word.key, (word.value)));
-        }
-      }
-      FeatureNode[] featuresArray = features.toArray(new FeatureNode[]{});
-      Arrays.parallelSort(featuresArray, new Comparator<FeatureNode>() {
-        public int compare(FeatureNode o1, FeatureNode o2) {
-          return Integer.compare(o1.index, o2.index);
-        }
-      });
-      featuresTrain[j] = featuresArray;
-    }
-    return featuresTrain;
+  protected static void /* //Martino - Commented to build code FeatureNode[][] */ initLibLinear(final WEASELTransform.BagOfBigrams[] bob, int max_feature) {
+//    FeatureNode[][] featuresTrain = new FeatureNode[bob.length][];
+//    for (int j = 0; j < bob.length; j++) {
+//      WEASELTransform.BagOfBigrams bop = bob[j];
+//      ArrayList<FeatureNode> features = new ArrayList<>(bop.bob.size());
+//      for (IntIntCursor word : bop.bob) {
+//        if (word.value > 0 && word.key <= max_feature) {
+//          features.add(new FeatureNode(word.key, (word.value)));
+//        }
+//      }
+//      FeatureNode[] featuresArray = features.toArray(new FeatureNode[]{});
+//      Arrays.parallelSort(featuresArray, new Comparator<FeatureNode>() {
+//        public int compare(FeatureNode o1, FeatureNode o2) {
+//          return Integer.compare(o1.index, o2.index);
+//        }
+//      });
+//      featuresTrain[j] = featuresArray;
+//    }
+//    return featuresTrain;
   }
 
   private static void swap(int[] array, int idxA, int idxB) {
@@ -231,16 +236,17 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
 
   @SuppressWarnings("static-access")
   protected static int trainLibLinear(
-      final Problem prob, final SolverType solverType, double c,
+      //Martino - Commented to build code final Problem prob, final SolverType solverType, double c,
       int iter, double p, int nr_fold) {
-    final Parameter param = new Parameter(solverType, c, iter, p);
+    //Martino - Commented to build code final Parameter param = new Parameter(solverType, c, iter, p);
 
     ThreadLocal<Random> myRandom = new ThreadLocal<>();
     myRandom.set(new Random(1));
     Random random = myRandom.get();
 
     int k;
-    final int l = prob.l;
+    //Martino - Commented to build code final int l = prob.l; 
+    int l = 0;
     final int[] perm = new int[l];
 
     if (nr_fold > l) {
@@ -262,37 +268,40 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
     final AtomicInteger correct = new AtomicInteger(0);
 
     final int fold = nr_fold;
-    Linear myLinear = new Linear();
-    myLinear.disableDebugOutput();
-    myLinear.resetRandom(); // reset random component of liblinear for reproducibility
+    //Martino - Commented to build code Linear myLinear = new Linear();
+    //Martino - Commented to build code myLinear.disableDebugOutput();
+    //Martino - Commented to build code myLinear.resetRandom(); // reset random component of liblinear for reproducibility
 
     for (int i = 0; i < fold; i++) {
       int begin = fold_start[i];
       int end = fold_start[i + 1];
       int j, kk;
-      Problem subprob = new Problem();
-
-      subprob.bias = prob.bias;
-      subprob.n = prob.n;
-      subprob.l = l - (end - begin);
-      subprob.x = new Feature[subprob.l][];
-      subprob.y = new double[subprob.l];
+//Martino - Commented to build code
+//      Problem subprob = new Problem();
+//
+//      subprob.bias = prob.bias;
+//      subprob.n = prob.n;
+//      subprob.l = l - (end - begin);
+//      subprob.x = new Feature[subprob.l][];
+//      subprob.y = new double[subprob.l];
 
       kk = 0;
       for (j = 0; j < begin; j++) {
-        subprob.x[kk] = prob.x[perm[j]];
-        subprob.y[kk] = prob.y[perm[j]];
+//Martino - Commented to build code
+//        subprob.x[kk] = prob.x[perm[j]];
+//        subprob.y[kk] = prob.y[perm[j]];
         ++kk;
       }
       for (j = end; j < l; j++) {
-        subprob.x[kk] = prob.x[perm[j]];
-        subprob.y[kk] = prob.y[perm[j]];
+//Martino - Commented to build code
+//        subprob.x[kk] = prob.x[perm[j]];
+//        subprob.y[kk] = prob.y[perm[j]];
         ++kk;
       }
 
-      de.bwaldvogel.liblinear.Model submodel = myLinear.train(subprob, param);
+      //Martino - Commented to build code de.bwaldvogel.liblinear.Model submodel = myLinear.train(subprob, param);
       for (j = begin; j < end; j++) {
-        correct.addAndGet(prob.y[perm[j]] == myLinear.predict(submodel, prob.x[perm[j]]) ? 1 : 0);
+        //Martino - Commented to build code correct.addAndGet(prob.y[perm[j]] == myLinear.predict(submodel, prob.x[perm[j]]) ? 1 : 0);
       }
     }
     return correct.get();
@@ -333,9 +342,9 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
           model.filterChiSquared(bop, chi);
 
           // train liblinear
-          final Problem problem = initLibLinearProblem(bop, model.dict, bias);
-          int correct = trainLibLinear(problem, solverType, c, iterations, p, folds);
-
+//Martino - Commented to build code          final Problem problem = initLibLinearProblem(bop, model.dict, bias);
+//Martino - Commented to build code         int correct = trainLibLinear(problem, solverType, c, iterations, p, folds);
+          int correct =0;
           if (correct > maxCorrect) {
             //System.out.println(correct + "\t" + f);
             maxCorrect = correct;
@@ -357,14 +366,14 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
       model.filterChiSquared(bob, chi);
 
       // train liblinear
-      Problem problem = initLibLinearProblem(bob, model.dict, bias);
-      de.bwaldvogel.liblinear.Model linearModel = Linear.train(problem, new Parameter(solverType, c, iterations, p));
+      //Martino - Commented to build code Problem problem = initLibLinearProblem(bob, model.dict, bias);
+      //Martino - Commented to build code de.bwaldvogel.liblinear.Model linearModel = Linear.train(problem, new Parameter(solverType, c, iterations, p));
 
       this.classifier = new WEASELModel(
           bestNorm,
           bestF,
-          model,
-          linearModel
+          model
+          //Martino - Commented to build code ,linearModel
       );
 
     } catch (Exception e) {
@@ -404,8 +413,8 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
     // chi square changes key mappings => remap
     classifier.weasel.dict.remap(bagTest);
 
-    FeatureNode[][] features = initLibLinear(bagTest, classifier.linearModel.getNrFeature());
-    return Linear.predict(classifier.linearModel, features[0]);
+    //Martino - Commented to build codeFeatureNode[][] features = initLibLinear(bagTest, classifier.linearModel.getNrFeature());
+    return 0;//Martino - Commented to build code Linear.predict(classifier.linearModel, features[0]);
   }
 
   @Override
@@ -418,16 +427,17 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
     // chi square changes key mappings => remap
     classifier.weasel.dict.remap(bagTest);
 
-    FeatureNode[][] features = initLibLinear(bagTest, classifier.linearModel.getNrFeature());
+    //Martino - Commented to build code FeatureNode[][] features = initLibLinear(bagTest, classifier.linearModel.getNrFeature());
 
-    double[] probabilities = new double[classifier.linearModel.getNrClass()];
+//Martino - Commented to build code double[] probabilities = new double[classifier.linearModel.getNrClass()];
 
-    Linear.predictProbability(classifier.linearModel, features[0], probabilities);
+    //Martino - Commented to build code Linear.predictProbability(classifier.linearModel, features[0], probabilities);
 
     // TODO do we have to remap classes to indices???
-    for (int i = 0; i < classifier.linearModel.getLabels().length; i++) {
-      classHist[classifier.linearModel.getLabels()[i]] = probabilities[i];
-    }
+//Martino - Commented to build code
+//    for (int i = 0; i < classifier.linearModel.getLabels().length; i++) {
+//      classHist[classifier.linearModel.getLabels()[i]] = probabilities[i];
+//    }
     return classHist;
   }
 
@@ -519,11 +529,11 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
      * The WEASEL-model: a histogram of SFA word and bi-gram frequencies
      */
     public static class BagOfBigrams {
-      public IntIntHashMap bob;
+//Martino - Commented to build code public IntIntHashMap bob;
       public Double label;
 
       public BagOfBigrams(int size, Double label) {
-        this.bob = new IntIntHashMap(size);
+//Martino - Commented to build code   this.bob = new IntIntHashMap(size);
         this.label = label;
       }
     }
@@ -534,59 +544,66 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
      * Condenses the SFA word space.
      */
     public static class Dictionary {
-      LongIntHashMap dict;
-      IntIntHashMap dictChi;
+//Martino - Commented to build code LongIntHashMap dict;
+//Martino - Commented to build code IntIntHashMap dictChi;
 
       public Dictionary() {
-        this.dict = new LongIntHashMap();
-        this.dictChi = new IntIntHashMap();
+//Martino - Commented to build code  this.dict = new LongIntHashMap();
+//Martino - Commented to build code   this.dictChi = new IntIntHashMap();
       }
 
       public void reset() {
-        this.dict = new LongIntHashMap();
-        this.dictChi = new IntIntHashMap();
+//Martino - Commented to build code   this.dict = new LongIntHashMap();
+//Martino - Commented to build code    this.dictChi = new IntIntHashMap();
       }
 
       public int getWord(long word) {
         int index = 0;
-        if ((index = this.dict.indexOf(word)) > -1) {
-          return this.dict.indexGet(index);
-        } else {
-          int newWord = this.dict.size() + 1;
-          this.dict.put(word, newWord);
-          return newWord;
-        }
+//Martino - Commented to build code
+//        if ((index = this.dict.indexOf(word)) > -1) {
+//          return this.dict.indexGet(index);
+//        } else {
+//          int newWord = this.dict.size() + 1;
+//          this.dict.put(word, newWord);
+//          return newWord;
+//        }
+        return 0;
       }
 
       public int getWordChi(int word) {
         int index = 0;
-        if ((index = this.dictChi.indexOf(word)) > -1) {
-          return this.dictChi.indexGet(index);
-        } else {
-          int newWord = this.dictChi.size() + 1;
-          this.dictChi.put(word, newWord);
-          return newWord;
-        }
+//Martino - Commented to build code
+//        if ((index = this.dictChi.indexOf(word)) > -1) {
+//          return this.dictChi.indexGet(index);
+//        } else {
+//          int newWord = this.dictChi.size() + 1;
+//          this.dictChi.put(word, newWord);
+//          return newWord;
+//        }
+return 0;
       }
 
       public int size() {
-        if (!this.dictChi.isEmpty()) {
-          return this.dictChi.size();
-        } else {
-          return this.dict.size();
-        }
+//Martino - Commented to build code
+//        if (!this.dictChi.isEmpty()) {
+//          return this.dictChi.size();
+//        } else {
+//          return this.dict.size();
+//        }
+return 0;
       }
 
       public void remap(final BagOfBigrams[] bagOfPatterns) {
-        for (int j = 0; j < bagOfPatterns.length; j++) {
-          IntIntHashMap oldMap = bagOfPatterns[j].bob;
-          bagOfPatterns[j].bob = new IntIntHashMap();
-          for (IntIntCursor word : oldMap) {
-            if (word.value > 0) {
-              bagOfPatterns[j].bob.put(getWordChi(word.key), word.value);
-            }
-          }
-        }
+//Martino - Commented to build code
+//        for (int j = 0; j < bagOfPatterns.length; j++) {
+//          IntIntHashMap oldMap = bagOfPatterns[j].bob;
+//          bagOfPatterns[j].bob = new IntIntHashMap();
+//          for (IntIntCursor word : oldMap) {
+//            if (word.value > 0) {
+//              bagOfPatterns[j].bob.put(getWordChi(word.key), word.value);
+//            }
+//          }
+//        }
       }
     }
 
@@ -674,57 +691,58 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
      * https://github.com/scikit-learn/scikit-learn/blob/c957249/sklearn/feature_selection/univariate_selection.py#L170
      */
     public void filterChiSquared(final BagOfBigrams[] bob, double chi_limit) {
-      // Chi2 Test
-      IntIntHashMap featureCount = new IntIntHashMap(bob[0].bob.size());
-      LongFloatHashMap classProb = new LongFloatHashMap(10);
-      LongIntHashMap observed = new LongIntHashMap(bob[0].bob.size());
-
-      // count number of samples with this word
-      for (BagOfBigrams bagOfPattern : bob) {
-        long label = bagOfPattern.label.longValue();
-        for (IntIntCursor word : bagOfPattern.bob) {
-          if (word.value > 0) {
-            featureCount.putOrAdd(word.key, 1, 1);
-            long key = label << 32 | word.key;
-            observed.putOrAdd(key, 1, 1);
-          }
-        }
-      }
-
-      // samples per class
-      for (BagOfBigrams bagOfPattern : bob) {
-        long label = bagOfPattern.label.longValue();
-        classProb.putOrAdd(label, 1, 1);
-      }
-
-      // chi-squared: observed minus expected occurrence
-      IntHashSet chiSquare = new IntHashSet(featureCount.size());
-      for (LongFloatCursor prob : classProb) {
-        prob.value /= bob.length; // (float) frequencies.get(prob.key);
-
-        for (IntIntCursor feature : featureCount) {
-          long key = prob.key << 32 | feature.key;
-          float expected = prob.value * feature.value;
-
-          float chi = observed.get(key) - expected;
-          float newChi = chi * chi / expected;
-          if (newChi >= chi_limit
-              && !chiSquare.contains(feature.key)) {
-            chiSquare.add(feature.key);
-          }
-        }
-      }
-
-      for (int j = 0; j < bob.length; j++) {
-        for (IntIntCursor cursor : bob[j].bob) {
-          if (!chiSquare.contains(cursor.key)) {
-            bob[j].bob.values[cursor.index] = 0;
-          }
-        }
-      }
-
-      // chi-squared reduces keys substantially => remap
-      this.dict.remap(bob);
+//Martino - Commented to build code
+//      // Chi2 Test
+//      IntIntHashMap featureCount = new IntIntHashMap(bob[0].bob.size());
+//      LongFloatHashMap classProb = new LongFloatHashMap(10);
+//      LongIntHashMap observed = new LongIntHashMap(bob[0].bob.size());
+//
+//      // count number of samples with this word
+//      for (BagOfBigrams bagOfPattern : bob) {
+//        long label = bagOfPattern.label.longValue();
+//        for (IntIntCursor word : bagOfPattern.bob) {
+//          if (word.value > 0) {
+//            featureCount.putOrAdd(word.key, 1, 1);
+//            long key = label << 32 | word.key;
+//            observed.putOrAdd(key, 1, 1);
+//          }
+//        }
+//      }
+//
+//      // samples per class
+//      for (BagOfBigrams bagOfPattern : bob) {
+//        long label = bagOfPattern.label.longValue();
+//        classProb.putOrAdd(label, 1, 1);
+//      }
+//
+//      // chi-squared: observed minus expected occurrence
+//      IntHashSet chiSquare = new IntHashSet(featureCount.size());
+//      for (LongFloatCursor prob : classProb) {
+//        prob.value /= bob.length; // (float) frequencies.get(prob.key);
+//
+//        for (IntIntCursor feature : featureCount) {
+//          long key = prob.key << 32 | feature.key;
+//          float expected = prob.value * feature.value;
+//
+//          float chi = observed.get(key) - expected;
+//          float newChi = chi * chi / expected;
+//          if (newChi >= chi_limit
+//              && !chiSquare.contains(feature.key)) {
+//            chiSquare.add(feature.key);
+//          }
+//        }
+//      }
+//
+//      for (int j = 0; j < bob.length; j++) {
+//        for (IntIntCursor cursor : bob[j].bob) {
+//          if (!chiSquare.contains(cursor.key)) {
+//            bob[j].bob.values[cursor.index] = 0;
+//          }
+//        }
+//      }
+//
+//      // chi-squared reduces keys substantially => remap
+//      this.dict.remap(bob);
     }
 
     /**
@@ -749,13 +767,13 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
         for (int w = 0; w < this.windowLengths.length; w++) {
           for (int offset = 0; offset < words[w][j].length; offset++) {
             int word = this.dict.getWord((words[w][j][offset] & mask) << highestBit | (long) w);
-            bagOfPatterns[j].bob.putOrAdd(word, 1, 1);
+//Martino - Commented to build code bagOfPatterns[j].bob.putOrAdd(word, 1, 1);
 
             // add 2 grams
             if (offset - this.windowLengths[w] >= 0) {
               long prevWord = this.dict.getWord((words[w][j][offset - this.windowLengths[w]] & mask) << highestBit | (long) w);
               int newWord = this.dict.getWord((prevWord << 32 | word ) << highestBit);
-              bagOfPatterns[j].bob.putOrAdd(newWord, 1, 1);
+//Martino - Commented to build code bagOfPatterns[j].bob.putOrAdd(newWord, 1, 1);
             }
           }
         }
@@ -781,13 +799,13 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
       for (int w = 0; w < this.windowLengths.length; w++) {
         for (int offset = 0; offset < words[w].length; offset++) {
           int word = this.dict.getWord((words[w][offset] & mask) << highestBit | (long) w);
-          bagOfPatterns.bob.putOrAdd(word, 1, 1);
+//Martino - Commented to build code bagOfPatterns.bob.putOrAdd(word, 1, 1);
 
           // add 2 grams
           if (offset - this.windowLengths[w] >= 0) {
             long prevWord = this.dict.getWord((words[w][offset - this.windowLengths[w]] & mask) << highestBit | (long) w);
             int newWord = this.dict.getWord((prevWord << 32 | word ) << highestBit);
-            bagOfPatterns.bob.putOrAdd(newWord, 1, 1);
+//Martino - Commented to build code  bagOfPatterns.bob.putOrAdd(newWord, 1, 1);
           }
         }
       }
@@ -945,27 +963,30 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
       return data;
     }
 
-    protected double entropy(ObjectIntHashMap<Double> frequency, double total) {
+    protected double entropy(/* //Martino - Commented to build code ObjectIntHashMap<Double> frequency, */double total) {
       double entropy = 0;
       double log2 = 1.0 / Math.log(2.0);
-      for (IntCursor element : frequency.values()) {
-        double p = element.value / total;
-        if (p > 0) {
-          entropy -= p * Math.log(p) * log2;
-        }
-      }
+//Martino - Commented to build code
+//      for (IntCursor element : frequency.values()) {
+//        double p = element.value / total;
+//        if (p > 0) {
+//          entropy -= p * Math.log(p) * log2;
+//        }
+//      }
       return entropy;
     }
 
     protected double calculateInformationGain(
-        ObjectIntHashMap<Double> cIn, ObjectIntHashMap<Double> cOut,
+//Martino - Commented to build code ObjectIntHashMap<Double> cIn, ObjectIntHashMap<Double> cOut,
         double class_entropy,
         double total_c_in,
         double total) {
       double total_c_out = (total - total_c_in);
-      return class_entropy
-          - total_c_in / total * entropy(cIn, total_c_in)
-          - total_c_out / total * entropy(cOut, total_c_out);
+//Martino - Commented to build code
+//      return class_entropy
+//          - total_c_in / total * entropy(cIn, total_c_in)
+//          - total_c_out / total * entropy(cOut, total_c_out);
+return 0;
     }
 
     protected void findBestSplit(
@@ -981,29 +1002,29 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
 
       // class entropy
       int total = end - start;
-      ObjectIntHashMap<Double> cIn = new ObjectIntHashMap<>();
-      ObjectIntHashMap<Double> cOut = new ObjectIntHashMap<>();
+//Martino - Commented to build code  ObjectIntHashMap<Double> cIn = new ObjectIntHashMap<>();
+//Martino - Commented to build code  ObjectIntHashMap<Double> cOut = new ObjectIntHashMap<>();
       for (int pos = start; pos < end; pos++) {
-        cOut.putOrAdd(element.get(pos).label, 1, 1);
+//Martino - Commented to build code   cOut.putOrAdd(element.get(pos).label, 1, 1);
       }
-      double class_entropy = entropy(cOut, total);
+//Martino - Commented to build code double class_entropy = entropy(cOut, total);
 
       int i = start;
       Double lastLabel = element.get(i).label;
-      i += moveElement(element, cIn, cOut, start);
+//Martino - Commented to build code  i += moveElement(element, cIn, cOut, start);
 
       for (int split = start + 1; split < end - 1; split++) {
         Double label = element.get(i).label;
-        i += moveElement(element, cIn, cOut, split);
+//Martino - Commented to build code    i += moveElement(element, cIn, cOut, split);
 
         // only inspect changes of the label
         if (!label.equals(lastLabel)) {
-          double gain = calculateInformationGain(cIn, cOut, class_entropy, i, total);
-
-          if (gain >= bestGain) {
-            bestPos = split;
-            bestGain = gain;
-          }
+//Martino - Commented to build code    double gain = calculateInformationGain(cIn, cOut, class_entropy, i, total);
+//Martino - Commented to build code
+//          if (gain >= bestGain) {
+//            bestPos = split;
+//            bestGain = gain;
+//          }
         }
         lastLabel = label;
       }
@@ -1030,10 +1051,10 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
 
     protected int moveElement(
         List<ValueLabel> element,
-        ObjectIntHashMap<Double> cIn, ObjectIntHashMap<Double> cOut,
+//Martino - Commented to build code    ObjectIntHashMap<Double> cIn, ObjectIntHashMap<Double> cOut,
         int pos) {
-      cIn.putOrAdd(element.get(pos).label, 1, 1);
-      cOut.putOrAdd(element.get(pos).label, -1, -1);
+//Martino - Commented to build code    cIn.putOrAdd(element.get(pos).label, 1, 1);
+//Martino - Commented to build code     cOut.putOrAdd(element.get(pos).label, -1, -1);
       return 1;
     }
 
@@ -1440,12 +1461,12 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
 
     private int windowSize = 0;
     private int startOffset = 0;
-    private transient DoubleFFT_1D fft = null;
+//Martino - Commented to build code  private transient DoubleFFT_1D fft = null;
 
     public MFT(int windowSize, boolean normMean) {
       this.windowSize = windowSize;
 
-      this.fft = new DoubleFFT_1D(this.windowSize);
+//Martino - Commented to build code  this.fft = new DoubleFFT_1D(this.windowSize);
 
       // ignore DC value?
       this.startOffset = normMean ? 2 : 0;
@@ -1482,7 +1503,7 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
 
       double[] data = new double[this.windowSize];
       System.arraycopy(series, 0, data, 0, Math.min(this.windowSize, series.length));
-      this.fft.realForward(data);
+//Martino - Commented to build code   this.fft.realForward(data);
       data[1] = 0; // DC-coefficient imaginary part
 
       // make it even length for uneven windowSize
@@ -1555,7 +1576,7 @@ public class WEASEL extends AbstractClassifierWithTrainingInfo implements HiveCo
           double[] data2 = toArrayNoClass(timeSeries);
           System.arraycopy(data2, 0, dft, 0, Math.min(this.windowSize, data.length));
 
-          this.fft.realForward(dft);
+//Martino - Commented to build code       this.fft.realForward(dft);
           dft[1] = 0; // DC-coefficient imag part
 
           // if windowSize > mftData.queryLength, the remaining data should be 0 now.

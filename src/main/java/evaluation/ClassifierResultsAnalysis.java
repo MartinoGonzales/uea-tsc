@@ -15,9 +15,11 @@
 package evaluation;
 
 import evaluation.storage.ClassifierResults;
+/* Martino - Commented to build code
 import ResultsProcessing.MatlabController;
 import ResultsProcessing.ResultColumn;
 import ResultsProcessing.ResultTable;
+*/
 import evaluation.MultipleClassifiersPairwiseTest;
 import experiments.DataSets;
 import experiments.Experiments;
@@ -34,12 +36,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
+// Martino - Commented to build code
+//import jxl.Workbook;
+//import jxl.WorkbookSettings;
+//import jxl.write.WritableCellFormat;
+//import jxl.write.WritableFont;
+//import jxl.write.WritableSheet;
+//import jxl.write.WritableWorkbook;
 import statistics.tests.OneSampleTests;
 import statistics.tests.TwoSampleTests;
 import utilities.GenericTools;
@@ -243,8 +246,9 @@ public class ClassifierResultsAnalysis {
      
         String[] statCliquesForCDDiasArr = statCliquesForCDDias.toArray(new String[] { });
         if(buildMatlabDiagrams) {
-            MatlabController proxy = MatlabController.getInstance();
-            proxy.eval("addpath(genpath('"+matlabFilePath+"'))");
+            // Martino - Commented to build code
+            //MatlabController proxy = MatlabController.getInstance();
+            //proxy.eval("addpath(genpath('"+matlabFilePath+"'))");
             matlab_buildTimingsDias(timeMetrics);
             matlab_buildCDDias(expname, statCliquesForCDDiasArr);
             matlab_buildPairwiseScatterDiagrams(outPath, expname, metrics, dsets);
@@ -835,22 +839,26 @@ public class ClassifierResultsAnalysis {
      * a list of stats to expect as a form of error checking
      */
     protected static void matlab_buildCDDias(String expname, String[] cliques) {        
-        MatlabController proxy = MatlabController.getInstance();
-        proxy.eval("buildDiasInDirectory('"+expRootDirectory+cdDiaFolderName+"/"+friedmanCDDiaDirName+"', 0, "+FRIEDMANCDDIA_PVAL+")"); //friedman 
-        proxy.eval("clear");
-        proxy.eval("buildDiasInDirectory('"+expRootDirectory+cdDiaFolderName+"/"+pairwiseCDDiaDirName+"', 1)");  //pairwise
-        proxy.eval("clear"); 
+        // Martino - Commented to build code
+        //MatlabController proxy = MatlabController.getInstance();
+        //proxy.eval("buildDiasInDirectory('"+expRootDirectory+cdDiaFolderName+"/"+friedmanCDDiaDirName+"', 0, "+FRIEDMANCDDIA_PVAL+")"); //friedman 
+        //proxy.eval("clear");
+        //proxy.eval("buildDiasInDirectory('"+expRootDirectory+cdDiaFolderName+"/"+pairwiseCDDiaDirName+"', 1)");  //pairwise
+        //proxy.eval("clear"); 
     }
     
     
     protected static void matlab_buildTimingsDias(List<PerformanceMetric> metrics) {        
-        MatlabController proxy = MatlabController.getInstance();
+        // Martino - Commented to build code
+        //MatlabController proxy = MatlabController.getInstance();
         
         String diaFolder = expRootDirectory+"/"+timingDiaFolderName+"/";
         for (PerformanceMetric metric : metrics) {
             String evalSet = metric.equals(PerformanceMetric.totalTestTime) || metric.equals(testTimeMetric) ? testLabel : trainLabel;
             String filenameNoExtension = fileNameBuild_avgsFile(evalSet, metric).replace(".csv", "");
-            proxy.eval("timingsLinePlot('"+diaFolder+filenameNoExtension+"', '"+evalSet.toLowerCase()+"');");   
+            
+            // Martino - Commented to build code
+            //proxy.eval("timingsLinePlot('"+diaFolder+filenameNoExtension+"', '"+evalSet.toLowerCase()+"');");   
         }
     }
         
@@ -1375,34 +1383,38 @@ public class ClassifierResultsAnalysis {
     }
     
     protected static void jxl_buildResultsSpreadsheet(String basePath, String expName, List<PerformanceMetric> metrics) {        
-        WritableWorkbook wb = null;
-        WorkbookSettings wbs = new WorkbookSettings();
-        wbs.setLocale(new Locale("en", "EN"));
+        // Martino - Commented to build code
+        //WritableWorkbook wb = null;
+        //WorkbookSettings wbs = new WorkbookSettings();
+        //wbs.setLocale(new Locale("en", "EN"));
         
         try {
-            wb = Workbook.createWorkbook(new File(basePath + expName + "ResultsSheet.xls"), wbs);        
+            // Martino - Commented to build code
+            //wb = Workbook.createWorkbook(new File(basePath + expName + "ResultsSheet.xls"), wbs);        
         } catch (Exception e) { 
             System.out.println("ERROR CREATING RESULTS SPREADSHEET");
             System.out.println(e);
             System.exit(0);
         }
-        
-        WritableSheet summarySheet = wb.createSheet("GlobalSummary", 0);
+        // Martino - Commented to build code
+        //WritableSheet summarySheet = wb.createSheet("GlobalSummary", 0);
         String summaryCSV = basePath + expName + "_SMALLglobalSummary.csv";
-        jxl_copyCSVIntoSheet(summarySheet, summaryCSV);
         
-        for (int i = 0; i < metrics.size(); i++) {
-            if (metrics.get(i).equals(PerformanceMetric.buildTime))
-                jxl_buildStatSheets_timings(wb, basePath, metrics.get(i), i, trainLabel);
-            else if (metrics.get(i).equals(PerformanceMetric.totalTestTime) || metrics.get(i).equals(testTimeMetric))
-                jxl_buildStatSheets_timings(wb, basePath, metrics.get(i), i, testLabel);
-            else 
-                jxl_buildStatSheets(wb, basePath, metrics.get(i), i);
-        }
+        // Martino - Commented to build code
+        //jxl_copyCSVIntoSheet(summarySheet, summaryCSV);
+        //for (int i = 0; i < metrics.size(); i++) {
+        //    if (metrics.get(i).equals(PerformanceMetric.buildTime))
+        //        jxl_buildStatSheets_timings(wb, basePath, metrics.get(i), i, trainLabel);
+        //   else if (metrics.get(i).equals(PerformanceMetric.totalTestTime) || metrics.get(i).equals(testTimeMetric))
+        //        jxl_buildStatSheets_timings(wb, basePath, metrics.get(i), i, testLabel);
+        //    else 
+        //        jxl_buildStatSheets(wb, basePath, metrics.get(i), i);
+        //}
         
         try {
-            wb.write();
-            wb.close();      
+            // Martino - Commented to build code
+            //wb.write();
+            //wb.close();      
         } catch (Exception e) { 
             System.out.println("ERROR WRITING AND CLOSING RESULTS SPREADSHEET");
             System.out.println(e);
@@ -1410,36 +1422,40 @@ public class ClassifierResultsAnalysis {
         }
     }
     
-    protected static void jxl_buildStatSheets(WritableWorkbook wb, String basePath, PerformanceMetric metric, int statIndex) {
+    protected static void jxl_buildStatSheets(/* // Martino - Commented to build code WritableWorkbook wb,*/ String basePath, PerformanceMetric metric, int statIndex) {
         String metricPath = basePath + metric + "/";
         String testMetricPath = metricPath + testLabel + "/";
-        
-        WritableSheet testSheet = wb.createSheet(metric+"Test", wb.getNumberOfSheets());
+        // Martino - Commented to build code
+        //WritableSheet testSheet = wb.createSheet(metric+"Test", wb.getNumberOfSheets());
         String testCSV = testMetricPath+ fileNameBuild_avgsFile(testLabel, metric);
-        jxl_copyCSVIntoSheet(testSheet, testCSV);
-        
-        WritableSheet summarySheet = wb.createSheet(metric+"TestSigDiffs", wb.getNumberOfSheets());
+        // Martino - Commented to build code
+        //jxl_copyCSVIntoSheet(testSheet, testCSV);
+        // Martino - Commented to build code
+        //WritableSheet summarySheet = wb.createSheet(metric+"TestSigDiffs", wb.getNumberOfSheets());
         String summaryCSV = testMetricPath + fileNameBuild_summaryFile(testLabel, metric);
-        jxl_copyCSVIntoSheet(summarySheet, summaryCSV);
+        // Martino - Commented to build code
+        //jxl_copyCSVIntoSheet(summarySheet, summaryCSV);
     }
     
-    protected static void jxl_buildStatSheets_timings(WritableWorkbook wb, String basePath, PerformanceMetric metric, int statIndex, String evalSet) {        
+    protected static void jxl_buildStatSheets_timings(/*Martino - Commented to build code WritableWorkbook wb,*/ String basePath, PerformanceMetric metric, int statIndex, String evalSet) {        
         // ************* the difference: timings folder assumed instead of going by the specific metric name
         //i.e Timings/TRAIN/TrainTimings and Timings/TEST/TestTimings    
         //instead of TrainTimings/TRAIN/TrainTimings ... 
         String metricPath = basePath + "Timings/" + evalSet + "/";
-        
-        WritableSheet avgsSheet = wb.createSheet(metric.name, wb.getNumberOfSheets());
+        //Martino - Commented to build code
+        //WritableSheet avgsSheet = wb.createSheet(metric.name, wb.getNumberOfSheets());
         String testCSV = metricPath + fileNameBuild_avgsFile(evalSet, metric);
-        jxl_copyCSVIntoSheet(avgsSheet, testCSV);
-
-        WritableSheet summarySheet = wb.createSheet(metric.name+"SigDiffs", wb.getNumberOfSheets());
+        //Martino - Commented to build code
+        //jxl_copyCSVIntoSheet(avgsSheet, testCSV);
+        //Martino - Commented to build code
+        //WritableSheet summarySheet = wb.createSheet(metric.name+"SigDiffs", wb.getNumberOfSheets());
         String summaryCSV = metricPath + fileNameBuild_summaryFile(evalSet, metric);
-        jxl_copyCSVIntoSheet(summarySheet, summaryCSV);
+        //Martino - Commented to build code
+        //jxl_copyCSVIntoSheet(summarySheet, summaryCSV);
 
     }
     
-    protected static void jxl_copyCSVIntoSheet(WritableSheet sheet, String csvFile) {
+    protected static void jxl_copyCSVIntoSheet(/* Martino - Commented to build code WritableSheet sheet,*/ String csvFile) {
         try { 
             Scanner fileIn = new Scanner(new File(csvFile));
 
@@ -1453,23 +1469,26 @@ public class ClassifierResultsAnalysis {
                     colInd++; //may not reach end of block, so incing first and initialising at -1
                     
                     String cellContents = lineIn.next();
-                    WritableFont font = new WritableFont(WritableFont.ARIAL, 10); 	
-                    WritableCellFormat format = new WritableCellFormat(font);
+                    //Martino - Commented to build code
+                    //WritableFont font = new WritableFont(WritableFont.ARIAL, 10); 	
+                    //WritableCellFormat format = new WritableCellFormat(font);
                     
                     try {
                         int iCellContents = Integer.parseInt(cellContents);
-                        sheet.addCell(new jxl.write.Number(colInd, rowInd, iCellContents, format));
+                        //Martino - Commented to build code
+                        //sheet.addCell(new jxl.write.Number(colInd, rowInd, iCellContents, format));
                         continue; //if successful, val was int, has been written, move on
                     } catch (NumberFormatException nfm) { }
                         
                     try {
                         double dCellContents = Double.parseDouble(cellContents);
-                        sheet.addCell(new jxl.write.Number(colInd, rowInd, dCellContents, format));
+                        //Martino - Commented to build code
+                        //sheet.addCell(new jxl.write.Number(colInd, rowInd, dCellContents, format));
                         continue; //if successful, val was int, has been written, move on
                     } catch (NumberFormatException nfm) { }
                     
-                    
-                    sheet.addCell(new jxl.write.Label(colInd, rowInd, cellContents, format));
+                    //Martino - Commented to build code
+                    //sheet.addCell(new jxl.write.Label(colInd, rowInd, cellContents, format));
                 }
                 rowInd++;
             }
@@ -1508,50 +1527,48 @@ public class ClassifierResultsAnalysis {
         for (PerformanceMetric metric : metrics) {
             try {
                 Pair<String[], double[][]> asd = matlab_readRawFile(outPath + fileNameBuild_pws(expName, metric.name) + ".csv", dsets.length);
-                ResultTable rt = new ResultTable(ResultTable.createColumns(asd.var1, dsets, asd.var2));
-
-                int numClassiifers = rt.getColumns().size();
-
-                MatlabController proxy = MatlabController.getInstance();
-                
-                for (int c1 = 0; c1 < numClassiifers-1; c1++) {
-                    for (int c2 = c1+1; c2 < numClassiifers; c2++) {
-                        String c1name = rt.getColumns().get(c1).getName();
-                        String c2name = rt.getColumns().get(c2).getName();
-                        
-                        if (c1name.compareTo(c2name) > 0) {
-                            String t = c1name;
-                            c1name = c2name;
-                            c2name = t;
-                        }
-                        
-                        String pwFolderName = outPath + c1name + "vs" + c2name + "/";
-                        (new File(pwFolderName)).mkdir();
-                        
-                        List<ResultColumn> pwrl = new ArrayList<>(2);
-                        pwrl.add(rt.getColumn(c1name).get());
-                        pwrl.add(rt.getColumn(c2name).get());
-                        ResultTable pwrt = new ResultTable(pwrl);
-
-                        proxy.eval("array = ["+ pwrt.toStringValues(false) + "];");
-
-                        final StringBuilder concat = new StringBuilder();
-                        concat.append("'");
-                        concat.append(c1name.replaceAll("_", "\\\\_"));
-                        concat.append("',");
-                        concat.append("'");
-                        concat.append(c2name.replaceAll("_", "\\\\_"));
-                        concat.append("'");
-                        proxy.eval("labels = {" + concat.toString() + "}");
-                        
-//                        System.out.println("array = ["+ pwrt.toStringValues(false) + "];");
-//                        System.out.println("labels = {" + concat.toString() + "}");
-//                        System.out.println("pairedscatter('" + pwFolderName + fileNameBuild_pwsInd(c1name, c2name, statName).replaceAll("\\.", "") + "',array(:,1),array(:,2),labels,'"+statName+"')");
-                        
-                        proxy.eval("pairedscatter('" + pwFolderName + fileNameBuild_pwsInd(c1name, c2name, metric.name).replaceAll("\\.", "") + "',array(:,1),array(:,2),labels,'"+metric.name+"','"+metric.comparisonDescriptor+"')");
-                        proxy.eval("clear");
-                    }
-                }
+                //Martino - Commented to build code
+                //ResultTable rt = new ResultTable(ResultTable.createColumns(asd.var1, dsets, asd.var2));
+                //int numClassiifers = rt.getColumns().size();
+                //MatlabController proxy = MatlabController.getInstance();
+//                for (int c1 = 0; c1 < numClassiifers-1; c1++) {
+//                    for (int c2 = c1+1; c2 < numClassiifers; c2++) {
+//                        String c1name = rt.getColumns().get(c1).getName();
+//                        String c2name = rt.getColumns().get(c2).getName();
+//                        
+//                        if (c1name.compareTo(c2name) > 0) {
+//                            String t = c1name;
+//                            c1name = c2name;
+//                            c2name = t;
+//                        }
+//                        
+//                        String pwFolderName = outPath + c1name + "vs" + c2name + "/";
+//                        (new File(pwFolderName)).mkdir();
+//                        
+//                        List<ResultColumn> pwrl = new ArrayList<>(2);
+//                        pwrl.add(rt.getColumn(c1name).get());
+//                        pwrl.add(rt.getColumn(c2name).get());
+//                        ResultTable pwrt = new ResultTable(pwrl);
+//
+//                        proxy.eval("array = ["+ pwrt.toStringValues(false) + "];");
+//
+//                        final StringBuilder concat = new StringBuilder();
+//                        concat.append("'");
+//                        concat.append(c1name.replaceAll("_", "\\\\_"));
+//                        concat.append("',");
+//                        concat.append("'");
+//                        concat.append(c2name.replaceAll("_", "\\\\_"));
+//                        concat.append("'");
+//                        proxy.eval("labels = {" + concat.toString() + "}");
+//                        
+////                        System.out.println("array = ["+ pwrt.toStringValues(false) + "];");
+////                        System.out.println("labels = {" + concat.toString() + "}");
+////                        System.out.println("pairedscatter('" + pwFolderName + fileNameBuild_pwsInd(c1name, c2name, statName).replaceAll("\\.", "") + "',array(:,1),array(:,2),labels,'"+statName+"')");
+//                        
+//                        proxy.eval("pairedscatter('" + pwFolderName + fileNameBuild_pwsInd(c1name, c2name, metric.name).replaceAll("\\.", "") + "',array(:,1),array(:,2),labels,'"+metric.name+"','"+metric.comparisonDescriptor+"')");
+//                        proxy.eval("clear");
+//                    }
+//                }
             } catch (Exception io) {
                 System.out.println("buildPairwiseScatterDiagrams("+outPath+") failed loading " + metric.name + " file\n" + io);
             }
