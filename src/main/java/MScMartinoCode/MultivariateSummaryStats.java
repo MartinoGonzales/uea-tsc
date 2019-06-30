@@ -5,12 +5,17 @@
  */
 package MScMartinoCode;
 
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import timeseriesweka.filters.SummaryStats;
 import utilities.ClassifierTools;
 import weka.core.Attribute;
+import weka.core.DenseInstance;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSink;
 import weka.filters.Filter;
 import weka.filters.SimpleBatchFilter;
 
@@ -22,8 +27,8 @@ import weka.filters.SimpleBatchFilter;
 // Global stats implemented so far mean, standardDeviation, skewness, kurtosis, min, max
 public class MultivariateSummaryStats extends SimpleBatchFilter {
     
-    private int numbMoments = 4; // What it is and for what is used??
-    public void setNumMoments(int newValue) {numbMoments = newValue;}
+    private int numbStats = 6; 
+    public void setNumbStats(int newValue) {numbStats = newValue;}
     
     
 
@@ -34,23 +39,6 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
 
     @Override
     protected Instances determineOutputFormat(Instances inputFormat) throws Exception {
-        // Check all the attributes are real valued
-        // To check that all attribute are numeric for a multivariate format
-        // the only way that I found is to extract a instance and iterate 
-        // throught its attribute
-//        Instance temp = inputFormat.firstInstance();
-//        // Then retrieve the relational attribute, there is only one so return 
-//        // the one at 0
-//        Instances features = temp.relationalValue(0);
-//        // Get the first features an iterate through it to check that all 
-//        // attribute are numeric. 
-//        temp = features.firstInstance();
-//        for (int i = 0; i < temp.numAttributes(); i++) {
-//            // Not need to check for the class value since we are looking 
-//            // at a single feature an not the whole instance
-//            if (!temp.attribute(i).isNumeric())
-//                throw new Exception("Non Numeric attribute not allowed in SummaryStats");
-//        }
 
         // Check that all the attributes are real valued
         // Since it is a multivariate format the first attribute will held the 
@@ -60,19 +48,11 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
             throw new Exception("Class index is not at the end of the Instance");
         // Then get the relational attribute
         Attribute relAtr = inputFormat.attribute(0);
-
-        // Iterate through attributes and check they are numeric
+        // Iterate through attributes in the relational attributes and check they are numeric
         for (int i = 0; i < relAtr.relation(0).numAttributes(); i++) {
             if (!relAtr.relation(0).attribute(i).isNumeric())
                 throw new Exception("Non Numeric attribute not allowed in SummaryStats");
         }
-        
-//        Attribute atr = inputFormat.attribute(0);
-//        atr.name();
-//        atr.isNumeric();
-//        atr.relation(0);atr.relation(0).numAttributes();
-//        atr.toString();
-//        atr.value(0);
                 
         // Create the ARFF format information 
         // In order to create relational attribute found useful to look at https://waikato.github.io/weka-wiki/creating_arff_file/
@@ -91,9 +71,6 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
         Instances dataRel = new Instances("FeaturesSummaryStats",attsRel,0);
         // Add it as an normal attribute
         atts.addElement(new Attribute("FeaturesSummaryStats",dataRel,0));
-        //System.out.println(dataRel);
-        //Instances temp2 = new Instances("DIOCANE",atts,0);
-        //System.out.println(temp2);
         
         // Set the class values
         if (inputFormat.classIndex() >= 0) {
@@ -108,7 +85,6 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
         // Set the class index to enforce that is at the end of the attribute
         if (inputFormat.classIndex() >= 0)
             result.setClassIndex(result.numAttributes()-1);
-        System.out.println(result);
         
         return result;
     }
@@ -119,26 +95,91 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
         
         // Iterate through Instances
         for (int i = 0; i < inst.numInstances(); i++) {
-            // Get the series
-            // Since it is multivariate the element at position 0 will be a
-            double [] s = inst.instance(i).toDoubleArray();
-            System.out.println("");
-            
-            
+            // Get the Instances representing the relational attribute
+            Instances relInst = inst.instance(i).relationalValue(0);
+            // Get the class value of the instance
+            int clsVal = (int) inst.instance(i).classValue();
+            // Create instances where store the relational Attributes for 
+            // each features
+            Instances dataRel = new Instances(output.attribute(0).relation(),0);
+            if (i == 8906)
+                System.out.println("");
+            // Iterate through each instance in the relational Instances
+            for (int j = 0; j < relInst.numInstances(); j++) {
+
+                // Get the Instance 
+                Instance temp = relInst.instance(j);
+                
+                // Start calculating the summary stats
+                // mean, standardDeviation, skewness, kurtosis, min, max
+                double [] summaryStats = new double[numbStats];
+                
+                // Get series 
+                double [] seriesVal = temp.toDoubleArray();
+                
+                summaryStats[0] = 0; // mean
+                summaryStats[1] = 0; // standardDeviation
+                summaryStats[2] = 0; // skewness
+                summaryStats[3] = 0; // kurtosis
+                summaryStats[4] = Double.MAX_VALUE; // min
+                summaryStats[5] = Double.MIN_VALUE; // max
+                for (int val = 0; val < seriesVal.length; val++) {
+                    summaryStats[0] += seriesVal[val];
+                    if (seriesVal[val] < summaryStats[4])
+                        summaryStats[4] = seriesVal[val];
+                    if (seriesVal[val] > summaryStats[5])
+                        summaryStats[5] = seriesVal[val]; 
+
+                }
+                summaryStats[0] /= seriesVal.length;
+                
+                for (int val = 0; val < seriesVal.length; val++) {
+                    summaryStats[1] += (seriesVal[val] - summaryStats[0]) * (seriesVal[val] - summaryStats[0]);
+                    summaryStats[2] += (seriesVal[val]-summaryStats[0])*(seriesVal[val]-summaryStats[0])*(seriesVal[val]-summaryStats[0]);
+                    summaryStats[3] += (seriesVal[val]-summaryStats[0])*(seriesVal[val]-summaryStats[0])*(seriesVal[val]-summaryStats[0])*(seriesVal[val]-summaryStats[0]);
+                }
+                summaryStats[1] = summaryStats[1]/(seriesVal.length-1);
+                summaryStats[1] = Math.sqrt(summaryStats[1]);
+                summaryStats[2] = summaryStats[2]/(summaryStats[1]*summaryStats[1]*summaryStats[1]);
+                summaryStats[2] = summaryStats[2]/seriesVal.length;
+                summaryStats[3] = summaryStats[3]/(summaryStats[1]*summaryStats[1]*summaryStats[1]*summaryStats[1]);
+                summaryStats[3] = summaryStats[3]/seriesVal.length;
+//                System.out.println("Mean : " + summaryStats[0]);
+//                System.out.println("Std : " + summaryStats[1]);
+//                System.out.println("Skewness : " + summaryStats[2]);
+//                System.out.println("kurtosis : " + summaryStats[3]);                
+//                System.out.println("Min : " + summaryStats[4]);
+//                System.out.println("Max : " + summaryStats[5]);
+ 
+                // Add summary stats to the relational data
+                dataRel.add(new DenseInstance(1.0,summaryStats));
+
+            }
+            // Create temporal array where to store the relational attributes
+            // and the class value
+            double [] temp = new double[output.numAttributes()];
+            temp[0] = output.attribute(0).addRelation(dataRel);
+            // add the class value
+            temp[1] = clsVal;
+            output.add(new DenseInstance(1.0,temp));
         }
-        return null;
+        return output;
         
     }
     
 	public static void main(String[] args) {
 /**Debug code to test SummaryStats generation: **/
-		
+
             try{
                 Instances data = Utilities.loadData("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate");
                 MultivariateSummaryStats mst = new MultivariateSummaryStats();
                 mst.setInputFormat(data);
                 Instances filter=Filter.useFilter(data,mst);
                 System.out.println(filter);
+                
+                // Save Instances to arr file 
+                DataSink.write("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate_SumStats.arff", filter);
+                
             }
             catch(Exception e){
                System.out.println("Exception thrown ="+e);
