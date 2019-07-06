@@ -187,20 +187,20 @@ public class Experiments {
                 standDir = "Standardised";
             File file = null; 
             OutFile outF = null;
-            OutFile temp1 = null;
-            OutFile temp2 = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_" + expId + ".csv");
-                temp1 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
-                temp2 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + c.clsID + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.clsID + "\\" + standDir + "\\" + c.clsID + "_" + expId + ".csv");
-                temp1 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
-                temp2 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
             }
             
             outF.writeLine(this.dataType + "," + c.clsID + ",test");
@@ -239,13 +239,13 @@ public class Experiments {
 //            }
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
-                temp1.writeDouble(test.get(inst).classValue());
-                temp1.writeString(",");
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeString(",");
                 
                 //System.out.println(inst);
                 guesses[inst] = (int) c.classifyInstance(test.get(inst));
-                temp2.writeDouble(guesses[inst]);
-                temp2.writeString(",");
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeString(",");
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -270,8 +270,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
-            temp1.closeFile();
-            temp2.closeFile();
+            classLabels.closeFile();
+            predictedLabels.closeFile();
         } else {
             // To Do 
         }
@@ -304,14 +304,20 @@ public class Experiments {
                 standDir = "Standardised";
             File file = null; 
             OutFile outF = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + c.getClsID() + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.getClsID() + "/" + standDir + "/" + c.getClsID() + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.getClsID() + "/" + standDir + "/" + c.getClsID() + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.getClsID() + "/" + standDir + "/" + c.getClsID() + "_predLabels_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + c.getClsID() + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.getClsID() + "\\" + standDir + "\\" + c.getClsID() + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.getClsID() + "\\" + standDir + "\\" + c.getClsID() + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.getClsID() + "\\" + standDir + "\\" + c.getClsID() + "_predLabels_" + expId + ".csv");
             }
             
 
@@ -348,7 +354,11 @@ public class Experiments {
 //            }
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeLine(",");
                 guesses[inst] = (int) c.classifyInstance(test.get(inst));
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeLine(",");
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -368,6 +378,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
+            classLabels.closeFile();
+            predictedLabels.closeFile();
             
         } else {
             // To Do 
@@ -411,14 +423,21 @@ public class Experiments {
  
             File file = null; 
             OutFile outF = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_predLabels_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + cId  + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_predLabels_" + expId + ".csv");
+
             }
             
 
@@ -456,7 +475,11 @@ public class Experiments {
             start = Instant.now();
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeLine(",");
                 guesses[inst] = (int) dt.classifyInstance(test.get(inst));
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeLine(",");		
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -480,7 +503,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
-            
+            classLabels.closeFile();
+            predictedLabels.closeFile();
         } else {
             // To Do 
         }
@@ -511,14 +535,21 @@ public class Experiments {
  
             File file = null; 
             OutFile outF = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_predLabels_" + expId + ".csv");
+
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + cId  + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_predLabels_" + expId + ".csv");
             }
             
             // Build classifiers and take time 
@@ -558,7 +589,11 @@ public class Experiments {
             start = Instant.now();
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeLine(",");
                 guesses[inst] = (int) rf.classifyInstance(test.get(inst));
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeLine(",");		
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -583,6 +618,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
+            classLabels.closeFile();
+            predictedLabels.closeFile();
         }
 
     }
@@ -619,14 +656,20 @@ public class Experiments {
  
             File file = null; 
             OutFile outF = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_predLabels_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + cId  + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_predLabels_" + expId + ".csv");
             }
             
             // Build classifiers and take time 
@@ -664,8 +707,12 @@ public class Experiments {
             start = Instant.now();
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeLine(",");
                 System.out.println(inst);
                 guesses[inst] = (int) svm.classifyInstance(test.get(inst));
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeLine(",");	
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -690,6 +737,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
+            classLabels.closeFile();
+            predictedLabels.closeFile();
         }
     }
     
@@ -722,14 +771,20 @@ public class Experiments {
  
             File file = null; 
             OutFile outF = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_predLabels_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + cId  + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_predLabels_" + expId + ".csv");
             }
             
             // Build classifiers and take time 
@@ -766,8 +821,12 @@ public class Experiments {
             start = Instant.now();
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeLine(",");
                 System.out.println(inst);
                 guesses[inst] = (int) mlp.classifyInstance(test.get(inst));
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeLine(",");
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -793,6 +852,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
+            classLabels.closeFile();
+            predictedLabels.closeFile();
         }
     }
     
@@ -822,13 +883,13 @@ public class Experiments {
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_" + expId + ".csv");
                 classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_cLabels_" + expId + ".csv");
-                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_prediLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_predLabels_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + cId  + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_" + expId + ".csv");
                 classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_cLabels_" + expId + ".csv");
-                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_prediLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_predLabels_" + expId + ".csv");
             }
             
             // Build classifiers and take time 
