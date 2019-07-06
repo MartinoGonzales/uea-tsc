@@ -187,7 +187,7 @@ public class ProjectMain {
             //datasetName = "binaryLCdata";
             standardiseF = true;
             outputF = true;
-            experiment = "NN_ED_D";
+            experiment = "NN_ED_I";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
@@ -292,6 +292,7 @@ public class ProjectMain {
                 Utilities.multivariateFormatConversion(datasetDir,dataSetTypes[0],"1000InstPerCls_LCdata", numbFeat, numbDate);
                 break;
             case "NN_ED_D" :
+            case "NN_ED_I" :
                 multivariateExps(datasetDir,outputDir,dataSetTypes,datasetName,
                         standardiseF,clusterF,outputF,experiment,expId);
                 break;
@@ -310,7 +311,8 @@ public class ProjectMain {
             AbstractClassifier c = null;
             if (cId.compareTo("NN_ED_D") == 0) 
                 c = new NN_ED_D();
-            
+            else if (cId.compareTo("NN_ED_I") == 0) 
+                c = new NN_ED_I();
             
             Experiments exp = new Experiments(datasetDir, datasetTypes[i],datasetName,outputDir,clusterF,outputF);
             exp.samplingExp(c, cId, expId, standardiseF);
