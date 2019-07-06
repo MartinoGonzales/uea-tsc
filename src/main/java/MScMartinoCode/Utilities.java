@@ -148,6 +148,131 @@ public class Utilities {
       
   }
     
+    
+    public static class StandardiseMultivariateDataset 
+    {
+              
+      private double [][] means;
+      private double [][] std;
+      
+      public StandardiseMultivariateDataset(Instances data) {
+            // Initialise means to store the means of each features (hardcoded to 10)
+            // and for each date (hardcoded to 23)
+            means = new double[10][23];
+            // Initialise variable to store standard deviation 
+            std = new double[10][23];
+            // Iterate through each instance
+            for (int inst = 0; inst < data.numInstances(); inst++) {
+                // Get instances representing the relational attribute
+                Instances relInst = data.instance(inst).relationalValue(0);
+                // Iterate through each feature in the relInst
+                for (int feat = 0; feat < relInst.numInstances(); feat++) {
+                    // Get the instance for a single feature
+                    Instance singFeat = relInst.instance(feat);
+                    // Get the values
+                    double [] seriesVal = singFeat.toDoubleArray();
+                    // Sum them to the mean 
+                    for (int val = 0; val < seriesVal.length; val++) {
+                        means[feat][val] += seriesVal[val];
+                    }
+                }
+            }
+            for (int feat = 0; feat < means.length; feat++) {
+                for (int val= 0; val < means[0].length; val++) {
+                    means[feat][val] /= data.numInstances();
+                }
+            }
+
+            System.out.println("");
+            
+          // Calculate deviation 
+          for (int inst = 0; inst < data.numInstances(); inst++) {
+                // Get instances representing the relational attribute
+                Instances relInst = data.instance(inst).relationalValue(0);
+                // Iterate through each feature in the relInst
+                for (int feat = 0; feat < relInst.numInstances(); feat++) {
+                    // Get the instance for a single feature
+                    Instance singFeat = relInst.instance(feat);
+                    // Get the values
+                    double [] seriesVal = singFeat.toDoubleArray();
+                    // Sum them to the mean 
+                    for (int val = 0; val < seriesVal.length; val++) {
+                        std[feat][val] += (seriesVal[val] - means[feat][val])*(seriesVal[val] - means[feat][val]);
+                    }
+                }
+          }
+
+            // Calculate the variance
+            for (int feat = 0; feat < std.length; feat++) {
+                for (int val= 0; val < std[0].length; val++) {
+                    std[feat][val] /= data.numInstances();
+                }
+            }
+            // Calculate the standard deviation
+            for (int feat = 0; feat < std.length; feat++) {
+                for (int val= 0; val < std[0].length; val++) {
+                    std[feat][val] /= Math.sqrt(std[feat][val]);
+                }
+            }
+          
+
+      }
+      
+      public Instances standardiseInstances(Instances data) {
+          // Standardise the data 
+          Instances temp = new Instances(data);
+          for (int inst = 0; inst < data.numInstances(); inst++) {
+                // Get instances representing the relational attribute
+                Instances relInst = data.instance(inst).relationalValue(0);
+                // Iterate through each feature in the relInst
+                for (int feat = 0; feat < relInst.numInstances(); feat++) {
+                    // Get the instance for a single feature
+                    Instance singFeat = relInst.instance(feat);
+                    // Get the values
+                    double [] seriesVal = singFeat.toDoubleArray();
+                    // Sum them to the mean 
+                    for (int val = 0; val < seriesVal.length; val++) {
+                        double standValue = (seriesVal[val] - means[feat][val]) / std[feat][val];
+                        temp.instance(inst).relationalValue(0).instance(feat).setValue(val, standValue);
+                    }
+                }
+          }
+          // Standardise the data
+//          Instances temp  = new Instances(data);
+//          int count = 0;
+//          for (Instance inst : data) {
+//              for (int atr = 0; atr < inst.numAttributes()-1; atr++) {
+//                    double standardiseValue = (inst.value(atr) - means[atr]) / std[atr];
+//                    temp.get(count).setValue(atr, standardiseValue);
+//              }
+//              count++;
+//          }
+//          return temp;
+            return temp;
+      }
+      
+      public Instance standardiseInstance(Instance inst) {
+//        Instance temp = inst;
+//        
+//        for (int atr = 0; atr < inst.numAttributes()-1; atr++) {
+//            
+//            double standardisedValue;
+//            
+//            //if (std[atr] == 0) {
+//            //    standardisedValue = 0;
+//                
+//            //} else {
+//                standardisedValue = (inst.value(atr) - means[atr]) / std[atr];
+//                
+//            //}
+//            
+//            temp.setValue(atr, standardisedValue);
+//        }
+//        return temp;
+return null;
+      }    
+    }
+    
     // Method to convert univariate to multivariate format. 
     // The file is given as a csv file and will print their multivariate 
     // representation to a txt file. 

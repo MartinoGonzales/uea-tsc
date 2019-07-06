@@ -25,7 +25,7 @@ import weka.core.Instances;
  *
  * @author Aaron
  */
-public class NN_ED_D extends AbstractClassifier{
+public class NN_ED_D extends AbstractClassifier {
     
     Instances train;
     EuclideanDistance_D D;

@@ -102,8 +102,7 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
             // Create instances where store the relational Attributes for 
             // each features
             Instances dataRel = new Instances(output.attribute(0).relation(),0);
-            if (i == 8906)
-                System.out.println("");
+
             // Iterate through each instance in the relational Instances
             for (int j = 0; j < relInst.numInstances(); j++) {
 

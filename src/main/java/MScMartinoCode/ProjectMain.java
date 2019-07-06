@@ -15,6 +15,7 @@ import multivariate_timeseriesweka.classifiers.NN_DTW_I;
 import multivariate_timeseriesweka.classifiers.NN_ED_D;
 import multivariate_timeseriesweka.classifiers.NN_ED_I;
 import utilities.InstanceTools;
+import weka.classifiers.AbstractClassifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
@@ -177,16 +178,16 @@ public class ProjectMain {
             
         } else {
             // Run locally 
-            datasetDir = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\";
+            datasetDir = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\Data\\";
             outputDir  = "\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\ResultsTemp\\";
             set = '2';
             //datasetName = "LCdata";
-            datasetName = "1000LCdata";
-            //datasetName = "1000LCdata_multivariate";
+            //datasetName = "1000LCdata";
+            datasetName = "1000LCdata_multivariate";
             //datasetName = "binaryLCdata";
-            standardiseF = false;
+            standardiseF = true;
             outputF = true;
-            experiment = "RotationForest";
+            experiment = "NN_ED_D";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
@@ -291,7 +292,8 @@ public class ProjectMain {
                 Utilities.multivariateFormatConversion(datasetDir,dataSetTypes[0],"1000InstPerCls_LCdata", numbFeat, numbDate);
                 break;
             case "NN_ED_D" :
-                tempNNED_D(datasetDir,dataSetTypes,datasetName);
+                multivariateExps(datasetDir,outputDir,dataSetTypes,datasetName,
+                        standardiseF,clusterF,outputF,experiment,expId);
                 break;
             default :
                 throw new Exception("Experiments specified not found");
@@ -299,47 +301,24 @@ public class ProjectMain {
         }
     }
     
-    public static void tempNNED_D(String datasetDir,String [] datasetTypes, String datasetName) throws Exception {
+    public static void multivariateExps(String datasetDir, String outputDir,
+            String [] datasetTypes,String datasetName, boolean standardiseF,
+            boolean clusterF, boolean outputF, String cId, int expId) throws Exception {
         
-            Instances data = Utilities.loadData(datasetDir + "\\" + datasetTypes[0] + "\\" + datasetName);
+        for (int i = 0; i < datasetTypes.length; i++) {
 
-            Instances [] temp = InstanceTools.resampleInstances(data, 0, 0.5);
-            Instances train = temp[0];
-            Instances test  = temp[1];
+            AbstractClassifier c = null;
+            if (cId.compareTo("NN_ED_D") == 0) 
+                c = new NN_ED_D();
             
-            // Build classifiers and take time 
-            System.out.print("Building Classifier...");
-            MultivariateShapeletTransformClassifier c = new MultivariateShapeletTransformClassifier();
-            c.buildClassifier(train);
+            
+            Experiments exp = new Experiments(datasetDir, datasetTypes[i],datasetName,outputDir,clusterF,outputF);
+            exp.samplingExp(c, cId, expId, standardiseF);
+            
+        }
+ 
 
-            System.out.println("done");
-            StringBuilder strResults = new StringBuilder();
-            System.out.print("Start classification...");
-            int correctGuess = 0;  
-            int [] guesses = new int[test.numInstances()];
-            for (int inst = 0; inst < test.numInstances(); inst++) {
-                
-                //System.out.println(inst);
-                guesses[inst] = (int) c.classifyInstance(test.get(inst));
-                if (guesses[inst] == (int) test.get(inst).classValue()) 
-                    correctGuess++;
-            }
-            
-            // Create confusion matrix
-            int [][] confMatrix = Experiments.createConfusionMatrix(train, guesses);
-            double Fscore = Experiments.calculateFscore(confMatrix);
-            
-            // Write everything to file 
 
-            System.out.println("Accuracy," + (double)correctGuess/(double)test.size());
-            System.out.println("F-Score," + Fscore);
-            System.out.println("Confusion Matrix");
-            for (int row = 0; row < confMatrix.length; row++) {
-                for (int col = 0; col < confMatrix.length; col++) {
-                    System.out.print(confMatrix[row][col] + " ");
-                }
-                System.out.println();
-        } 
     }
 
     /**
