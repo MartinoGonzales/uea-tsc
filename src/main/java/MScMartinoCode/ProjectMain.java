@@ -5,11 +5,20 @@
  */
 package MScMartinoCode;
 
+import evaluation.PerformanceMetric;
 import java.io.FileReader;
 import java.io.IOException;
+import multivariate_timeseriesweka.classifiers.MultivariateShapeletTransformClassifier;
+import multivariate_timeseriesweka.classifiers.NN_DTW_A;
+import multivariate_timeseriesweka.classifiers.NN_DTW_D;
+import multivariate_timeseriesweka.classifiers.NN_DTW_I;
+import multivariate_timeseriesweka.classifiers.NN_ED_D;
+import multivariate_timeseriesweka.classifiers.NN_ED_I;
+import utilities.InstanceTools;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
+import weka.classifiers.meta.RotationForest;
 import weka.classifiers.trees.J48;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instance;
@@ -27,7 +36,7 @@ public class ProjectMain {
      * @param args the command line arguments
     */
     public static void main(String[] args) throws Exception {
-    
+        
     /////////////////////////// Variables \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
         // Dataset Dir
         String datasetDir = "";
@@ -177,7 +186,7 @@ public class ProjectMain {
             //datasetName = "binaryLCdata";
             standardiseF = false;
             outputF = true;
-            experiment = "MeansC";
+            experiment = "RotationForest";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
@@ -213,6 +222,8 @@ public class ProjectMain {
             mlpCvLearnRate = false;
             mlpCvMomenumRate = false;
             mlpCvEpoch = false;
+            
+            // Rotation forest variable
             
             
         }       
@@ -272,13 +283,63 @@ public class ProjectMain {
                         standardiseF, clusterF, outputF, experiment, expId,
                         mlpNormaliseF,mlpCvLearnRate,mlpCvMomenumRate,mlpCvEpoch);
                 break;
+            case "RotationForest" :
+                RotationForestExps(datasetDir,outputDir,dataSetTypes,datasetName,
+                        standardiseF,clusterF,outputF,expId);
+                break;
             case "multivariateConv" :
                 Utilities.multivariateFormatConversion(datasetDir,dataSetTypes[0],"1000InstPerCls_LCdata", numbFeat, numbDate);
+                break;
+            case "NN_ED_D" :
+                tempNNED_D(datasetDir,dataSetTypes,datasetName);
                 break;
             default :
                 throw new Exception("Experiments specified not found");
                        
         }
+    }
+    
+    public static void tempNNED_D(String datasetDir,String [] datasetTypes, String datasetName) throws Exception {
+        
+            Instances data = Utilities.loadData(datasetDir + "\\" + datasetTypes[0] + "\\" + datasetName);
+
+            Instances [] temp = InstanceTools.resampleInstances(data, 0, 0.5);
+            Instances train = temp[0];
+            Instances test  = temp[1];
+            
+            // Build classifiers and take time 
+            System.out.print("Building Classifier...");
+            MultivariateShapeletTransformClassifier c = new MultivariateShapeletTransformClassifier();
+            c.buildClassifier(train);
+
+            System.out.println("done");
+            StringBuilder strResults = new StringBuilder();
+            System.out.print("Start classification...");
+            int correctGuess = 0;  
+            int [] guesses = new int[test.numInstances()];
+            for (int inst = 0; inst < test.numInstances(); inst++) {
+                
+                //System.out.println(inst);
+                guesses[inst] = (int) c.classifyInstance(test.get(inst));
+                if (guesses[inst] == (int) test.get(inst).classValue()) 
+                    correctGuess++;
+            }
+            
+            // Create confusion matrix
+            int [][] confMatrix = Experiments.createConfusionMatrix(train, guesses);
+            double Fscore = Experiments.calculateFscore(confMatrix);
+            
+            // Write everything to file 
+
+            System.out.println("Accuracy," + (double)correctGuess/(double)test.size());
+            System.out.println("F-Score," + Fscore);
+            System.out.println("Confusion Matrix");
+            for (int row = 0; row < confMatrix.length; row++) {
+                for (int col = 0; col < confMatrix.length; col++) {
+                    System.out.print(confMatrix[row][col] + " ");
+                }
+                System.out.println();
+        } 
     }
 
     /**
@@ -433,6 +494,17 @@ public class ProjectMain {
                 
             Experiments exp = new Experiments(datasetDir, datasetType[i], datasetName, outputDir, clusterF, outputF);
             exp.samplingExp(mlp, expId, standardiseF, mlpCvLearnRate, mlpCvMomenumRate,mlpCvEpoch);
+        }
+    }
+
+    private static void RotationForestExps(String datasetDir, String outputDir, 
+            String[] dataSetTypes, String datasetName, boolean standardiseF, 
+            boolean clusterF, boolean outputF, int expId) throws Exception {
+        
+        for (int i = 0; i < dataSetTypes.length; i++) {
+            RotationForest c = new RotationForest();
+            Experiments exp = new Experiments(datasetDir,dataSetTypes[i],datasetName,outputDir,clusterF,outputF);
+            exp.samplingExp(c, expId,standardiseF);
         }
     }
 }

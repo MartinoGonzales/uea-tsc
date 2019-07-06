@@ -174,6 +174,7 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
                 Instances data = Utilities.loadData("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate");
                 MultivariateSummaryStats mst = new MultivariateSummaryStats();
                 mst.setInputFormat(data);
+                
                 Instances filter=Filter.useFilter(data,mst);
                 System.out.println(filter);
                 

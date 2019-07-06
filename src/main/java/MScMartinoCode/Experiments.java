@@ -13,6 +13,7 @@ import utilities.InstanceTools;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
+import weka.classifiers.meta.RotationForest;
 import weka.classifiers.trees.J48;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instance;
@@ -186,14 +187,20 @@ public class Experiments {
                 standDir = "Standardised";
             File file = null; 
             OutFile outF = null;
+            OutFile temp1 = null;
+            OutFile temp2 = null;
             if (this.isCluster) {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_" + expId + ".csv");
+                temp1 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
+                temp2 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + c.clsID + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.clsID + "\\" + standDir + "\\" + c.clsID + "_" + expId + ".csv");
+                temp1 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
+                temp2 = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
             }
             
             outF.writeLine(this.dataType + "," + c.clsID + ",test");
@@ -232,12 +239,17 @@ public class Experiments {
 //            }
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
+                temp1.writeDouble(test.get(inst).classValue());
+                temp1.writeString(",");
                 
                 //System.out.println(inst);
                 guesses[inst] = (int) c.classifyInstance(test.get(inst));
+                temp2.writeDouble(guesses[inst]);
+                temp2.writeString(",");
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
+            
             System.out.println("done");
             end = Instant.now();
             long timeTakenClassify = Duration.between(start, end).toMillis();
@@ -258,7 +270,8 @@ public class Experiments {
             outF.writeLine("Confusion Matrix");
             Utilities.printConfusionMatrix(confMatrix,outF);
             outF.closeFile();
-            
+            temp1.closeFile();
+            temp2.closeFile();
         } else {
             // To Do 
         }
@@ -783,8 +796,100 @@ public class Experiments {
         }
     }
     
+    void samplingExp(RotationForest c, int expId, boolean standardiseF) throws Exception {
+        String standDir = (standardiseF) ? "Standardise" : "NoStandardised";
+        String cId = "RotationForest";
+
+        
+        System.out.println("Running Classifier : " + cId);
+        if (this.isOutputFile) {
+            // Load the data
+            System.out.print("Loading data...");
+            Instances data = null;
+            if (this.isCluster) 
+                data = Utilities.loadData(this.datasetDir + "/" + this.dataType + "/" +  this.datasetName);
+            else
+                data = Utilities.loadData(this.datasetDir + "\\" + this.dataType + "\\" +  this.datasetName);
+
+            System.out.println("done");
+ 
+            File file = null; 
+            OutFile outF = null;
+            OutFile classLabels = null;
+            OutFile predictedLabels = null; 
+            if (this.isCluster) {
+                file = new File(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir);
+                file.mkdirs();
+                outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + cId + "/" + standDir + "/" + cId + "_prediLabels_" + expId + ".csv");
+            } else {
+                file = new File(this.outputDir + "\\" + this.datasetName + "\\" + cId  + "\\" + standDir);
+                file.mkdirs();
+                outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_prediLabels_" + expId + ".csv");
+            }
+            
+            // Build classifiers and take time 
+            System.out.print("Building Classifier...");
+            Instant start = Instant.now();
+            // I put standardisation here since in other experiments 
+            // it was done inside the classifiers
+            if (standardiseF) {
+                Utilities.StandardiseDataset standInst = new Utilities.StandardiseDataset(data);
+                data = standInst.standardiseInstances(data);
+            }
+            Instances [] temp = InstanceTools.resampleInstances(data, expId, 0.5);
+            Instances train = temp[0];
+            Instances test  = temp[1];
+            // Carry out a 10-fold cross validation  to set best min number of 
+            // object per node if required
+
+            c.buildClassifier(train);
+            Instant end = Instant.now();
+            long timeTakenBuild = Duration.between(start, end).toMillis();
+            System.out.println("done");
+            StringBuilder strResults = new StringBuilder();
+            // Classify test set
+//            int tempCount = 0;
+            System.out.print("Start classification...");
+            int correctGuess = 0;  
+            int [] guesses = new int[test.numInstances()];
+            start = Instant.now();
+
+            for (int inst = 0; inst < test.numInstances(); inst++) {
+                System.out.println(inst);
+                classLabels.writeDouble(test.get(inst).classValue());
+                classLabels.writeString(",");
+                
+                guesses[inst] = (int) c.classifyInstance(test.get(inst));
+                
+                predictedLabels.writeDouble(guesses[inst]);
+                predictedLabels.writeString(",");
+                
+                if (guesses[inst] == (int) test.get(inst).classValue()) 
+                    correctGuess++;
+            }
+            System.out.println("done");
+            end = Instant.now();
+            long timeTakenClassify = Duration.between(start, end).toMillis();
+            
+            // Create confusion matrix
+            int [][] confMatrix = createConfusionMatrix(train, guesses);
+            double Fscore = calculateFscore(confMatrix);
+            outF.writeLine("Accuracy," + (double)correctGuess/(double)test.size());
+            outF.writeLine("F-Score," + Fscore);
+            outF.writeLine("Time Taken Build," + timeTakenBuild);
+            outF.writeLine("Time Taken Classify," + timeTakenClassify);
+            outF.writeLine("Confusion Matrix");
+            Utilities.printConfusionMatrix(confMatrix,outF);
+            outF.closeFile();
+        }
+    }
     
-    public int[][] createConfusionMatrix(Instances train, int [] guesses){
+    
+    public static int[][] createConfusionMatrix(Instances train, int [] guesses){
         int [][] matrix = new int[train.numClasses()][train.numClasses()];
         for (int i = 0; i < train.numInstances(); i++) {
             matrix[(int)train.get(i).classValue()][guesses[i]]++;
@@ -792,7 +897,7 @@ public class Experiments {
         return matrix;
     }
     
-    public double calculateFscore(int [][] confMatrix) {
+    public static double calculateFscore(int [][] confMatrix) {
         // Start by calculating the overall precision for each class
         double [] precisions = new double[confMatrix.length];
         for (int col = 0; col < precisions.length; col++) {
@@ -1220,7 +1325,5 @@ public class Experiments {
         }
         return (100 * indexMax)+100;
     }
-
-
 
 }
