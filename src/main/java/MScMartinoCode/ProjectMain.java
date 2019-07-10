@@ -190,7 +190,7 @@ public class ProjectMain {
             //datasetName = "binaryLCdata";
             standardiseF = true;
             outputF = true;
-            experiment = "NN_ED_I";
+            experiment = "NN_DTW_A";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
@@ -296,6 +296,9 @@ public class ProjectMain {
                 break;
             case "NN_ED_D" :
             case "NN_ED_I" :
+            case "NN_DTW_A" :
+            case "NN_DTW_D" :
+            case "NN_DTW_I" :
                 multivariateExps(datasetDir,outputDir,dataSetTypes,datasetName,
                         standardiseF,clusterF,outputF,experiment,expId);
                 break;
@@ -316,6 +319,12 @@ public class ProjectMain {
                 c = new NN_ED_D();
             else if (cId.compareTo("NN_ED_I") == 0) 
                 c = new NN_ED_I();
+            else if (cId.compareTo("NN_DTW_A") == 0)
+                c = new NN_DTW_A();
+            else if (cId.compareTo("NN_DTW_D") == 0)
+                c= new NN_DTW_D();
+            else if (cId.compareTo("NN_DTW_IA") == 0)
+                c = new NN_DTW_I();
             
             Experiments exp = new Experiments(datasetDir, datasetTypes[i],datasetName,outputDir,clusterF,outputF);
             exp.samplingExp(c, cId, expId, standardiseF);
