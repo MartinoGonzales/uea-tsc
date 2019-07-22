@@ -159,6 +159,7 @@ public class ProjectMain {
             cvNumFoldsF = Boolean.parseBoolean(args[25]);
             startFold = Integer.parseInt(args[26]);
             endFold   = Integer.parseInt(args[27]);
+            System.out.println("cvNumFoldsF : " + cvNumFoldsF);
             System.out.println("Range for number of folds : " + startFold + " - " + endFold);
             cvCF = Boolean.parseBoolean(args[28]);
             System.out.println("cvC : " + cvCF);
@@ -186,11 +187,12 @@ public class ProjectMain {
             set = '2';
             //datasetName = "LCdata";
             //datasetName = "1000LCdata";
-            datasetName = "1000LCdata_multivariate";
+            //datasetName = "1000LCdata_multivariate";
+            datasetName = "1000LCdata_multivariate_SumStats2";
             //datasetName = "binaryLCdata";
             standardiseF = true;
             outputF = true;
-            experiment = "NN_DTW_A";
+            experiment = "MultShapeletTransformC";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
@@ -299,6 +301,7 @@ public class ProjectMain {
             case "NN_DTW_A" :
             case "NN_DTW_D" :
             case "NN_DTW_I" :
+            case "MultShapeletTransformC" : 
                 multivariateExps(datasetDir,outputDir,dataSetTypes,datasetName,
                         standardiseF,clusterF,outputF,experiment,expId);
                 break;
@@ -323,8 +326,10 @@ public class ProjectMain {
                 c = new NN_DTW_A();
             else if (cId.compareTo("NN_DTW_D") == 0)
                 c= new NN_DTW_D();
-            else if (cId.compareTo("NN_DTW_IA") == 0)
+            else if (cId.compareTo("NN_DTW_I") == 0)
                 c = new NN_DTW_I();
+            else if (cId.compareTo("MultShapeletTransformC") == 0)
+                c = new MultivariateShapeletTransformClassifier();
             
             Experiments exp = new Experiments(datasetDir, datasetTypes[i],datasetName,outputDir,clusterF,outputF);
             exp.samplingExp(c, cId, expId, standardiseF);

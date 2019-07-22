@@ -105,7 +105,8 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
 
             // Iterate through each instance in the relational Instances
             for (int j = 0; j < relInst.numInstances(); j++) {
-
+//                if (i == 42)
+//                    System.out.println("");
                 // Get the Instance 
                 Instance temp = relInst.instance(j);
                 
@@ -131,6 +132,8 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
 
                 }
                 summaryStats[0] /= seriesVal.length;
+                if (i == 42 && summaryStats[0] == 0)
+                    System.out.println("");
                 
                 for (int val = 0; val < seriesVal.length; val++) {
                     summaryStats[1] += (seriesVal[val] - summaryStats[0]) * (seriesVal[val] - summaryStats[0]);
@@ -139,10 +142,25 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
                 }
                 summaryStats[1] = summaryStats[1]/(seriesVal.length-1);
                 summaryStats[1] = Math.sqrt(summaryStats[1]);
-                summaryStats[2] = summaryStats[2]/(summaryStats[1]*summaryStats[1]*summaryStats[1]);
-                summaryStats[2] = summaryStats[2]/seriesVal.length;
-                summaryStats[3] = summaryStats[3]/(summaryStats[1]*summaryStats[1]*summaryStats[1]*summaryStats[1]);
-                summaryStats[3] = summaryStats[3]/seriesVal.length;
+                if (summaryStats[1] != 0) {
+                    summaryStats[2] = summaryStats[2]/(summaryStats[1]*summaryStats[1]*summaryStats[1]);
+                    summaryStats[2] = summaryStats[2]/seriesVal.length;
+                    summaryStats[3] = summaryStats[3]/(summaryStats[1]*summaryStats[1]*summaryStats[1]*summaryStats[1]);
+                    summaryStats[3] = summaryStats[3]/seriesVal.length;
+                } else {
+                    double tempStd = 0.0000000001;
+                    summaryStats[2] = summaryStats[2]/(tempStd*tempStd*tempStd);
+                    summaryStats[2] = summaryStats[2]/seriesVal.length;
+                    summaryStats[3] = summaryStats[3]/(tempStd*tempStd*tempStd*tempStd);
+                    summaryStats[3] = summaryStats[3]/seriesVal.length;
+                }
+                
+                
+//                summaryStats[2] = summaryStats[2]/(summaryStats[1]*summaryStats[1]*summaryStats[1]);
+//                summaryStats[2] = summaryStats[2]/seriesVal.length;
+//                summaryStats[3] = summaryStats[3]/(summaryStats[1]*summaryStats[1]*summaryStats[1]*summaryStats[1]);
+//                summaryStats[3] = summaryStats[3]/seriesVal.length;
+                
 //                System.out.println("Mean : " + summaryStats[0]);
 //                System.out.println("Std : " + summaryStats[1]);
 //                System.out.println("Skewness : " + summaryStats[2]);
@@ -170,7 +188,8 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
 /**Debug code to test SummaryStats generation: **/
 
             try{
-                Instances data = Utilities.loadData("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate");
+                // Instances data = Utilities.loadData("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate");
+                Instances data = Utilities.loadData("C:\\Users\\Martino94\\Desktop\\Dissertation\\Data\\1000InstPerClass_LCdata\\1000LCdata_multivariate");
                 MultivariateSummaryStats mst = new MultivariateSummaryStats();
                 mst.setInputFormat(data);
                 
@@ -178,8 +197,8 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
                 System.out.println(filter);
                 
                 // Save Instances to arr file 
-                DataSink.write("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate_SumStats.arff", filter);
-                
+                // DataSink.write("\\\\ueahome4\\stusci3\\fax14yxu\\data\\Documents\\4th year\\Dissertation\\data\\1000InstPerClass_LCdata\\1000LCdata_multivariate_SumStats2.arff", filter);
+                DataSink.write("C:\\Users\\Martino94\\Desktop\\Dissertation\\Data\\1000InstPerClass_LCdata\\1000LCdata_multivariate_SumStats2.arff", filter);
             }
             catch(Exception e){
                System.out.println("Exception thrown ="+e);
