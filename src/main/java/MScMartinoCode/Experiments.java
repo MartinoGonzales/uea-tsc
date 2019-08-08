@@ -194,14 +194,14 @@ public class Experiments {
                 file = new File(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_" + expId + ".csv");
-                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
-                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_predLabels_" + expId + ".csv");
             } else {
                 file = new File(this.outputDir + "\\" + this.datasetName + "\\" + c.clsID + "\\" + standDir);
                 file.mkdirs();
                 outF = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.clsID + "\\" + standDir + "\\" + c.clsID + "_" + expId + ".csv");
-                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp1_" + expId + ".csv");
-                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "temp2_" + expId + ".csv");
+                classLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_cLabels_" + expId + ".csv");
+                predictedLabels = new OutFile(this.outputDir + "/" + this.datasetName + "/" + c.clsID + "/" + standDir + "/" + c.clsID + "_predLabels_" + expId + ".csv");
             }
             
             outF.writeLine(this.dataType + "," + c.clsID + ",test");
@@ -356,10 +356,10 @@ public class Experiments {
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
-                classLabels.writeLine(",");
+                classLabels.writeString(",");
                 guesses[inst] = (int) c.classifyInstance(test.get(inst));
                 predictedLabels.writeDouble(guesses[inst]);
-                predictedLabels.writeLine(",");
+                predictedLabels.writeString(",");
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -477,10 +477,10 @@ public class Experiments {
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
-                classLabels.writeLine(",");
+                classLabels.writeString(",");
                 guesses[inst] = (int) dt.classifyInstance(test.get(inst));
                 predictedLabels.writeDouble(guesses[inst]);
-                predictedLabels.writeLine(",");		
+                predictedLabels.writeString(",");		
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -591,10 +591,10 @@ public class Experiments {
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
-                classLabels.writeLine(",");
+                classLabels.writeString(",");
                 guesses[inst] = (int) rf.classifyInstance(test.get(inst));
                 predictedLabels.writeDouble(guesses[inst]);
-                predictedLabels.writeLine(",");		
+                predictedLabels.writeString(",");		
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -709,11 +709,11 @@ public class Experiments {
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
-                classLabels.writeLine(",");
+                classLabels.writeString(",");
                 System.out.println(inst);
                 guesses[inst] = (int) svm.classifyInstance(test.get(inst));
                 predictedLabels.writeDouble(guesses[inst]);
-                predictedLabels.writeLine(",");	
+                predictedLabels.writeString(",");	
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }
@@ -823,11 +823,11 @@ public class Experiments {
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
-                classLabels.writeLine(",");
+                classLabels.writeString(",");
                 System.out.println(inst);
                 guesses[inst] = (int) mlp.classifyInstance(test.get(inst));
                 predictedLabels.writeDouble(guesses[inst]);
-                predictedLabels.writeLine(",");
+                predictedLabels.writeString(",");
                 if (guesses[inst] == (int) test.get(inst).classValue()) 
                     correctGuess++;
             }

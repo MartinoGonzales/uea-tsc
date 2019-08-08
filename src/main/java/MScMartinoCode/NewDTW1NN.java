@@ -123,7 +123,8 @@ public class NewDTW1NN extends NNClassifiers implements Serializable {
 
             totDist += this.featureDist(firstTemp, secondTemp, abandonValue, feat);
         }
-        return totDist;
+        //return totDist;
+        return totDist/10;
     }
     
     public double featureDist(Instance first, Instance second, double abandonValue, int featIndex) {
