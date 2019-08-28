@@ -192,7 +192,7 @@ public class ProjectMain {
             //datasetName = "binaryLCdata";
             standardiseF = false;
             outputF = true;
-            experiment = "NewNNDTW";
+            experiment = "NNED";
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
