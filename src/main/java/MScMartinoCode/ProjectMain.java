@@ -30,7 +30,7 @@ import weka.core.SelectedTag;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class ProjectMain {
 /**
@@ -101,6 +101,7 @@ public class ProjectMain {
         
         
         if (args.length>0) {
+            // Run on cluster
             clusterF = true;
             // Run on cluster
             System.out.println("\t -- GENERAL VARIABLE -- ");
@@ -184,15 +185,42 @@ public class ProjectMain {
             
             //datasetDir = "C:\\Users\\Martino94\\Desktop\\Dissertation\\Data\\";
             //outputDir  = "C:\\Users\\Martino94\\Desktop\\Dissertation\\ResultsTemp\\";
-            set = '2';
+            
+            // set = '1'; LCproblem
+            set = '2'; // 1000InstPerClass_LCdata
+            
             //datasetName = "LCdata";
             datasetName = "1000LCdata";
             //datasetName = "1000LCdata_multivariate";
             //datasetName = "1000LCdata_multivariate_SumStats2";
-            //datasetName = "binaryLCdata";
+
+            
             standardiseF = false;
             outputF = true;
+            
             experiment = "NNED";
+//            experiment = "NNDTW";
+//            experiment = "MeansC";
+//            experiment = "MaxC";
+//            experiment = "MinMaxC";
+//            experiment = "OptMinMaxC";
+//            experiment = "FullMinMaxC";
+//            experiment = "StdC";
+//            experiment = "StatsEnsembleC";
+//            experiment = "OptStatsEnsembleC";
+//            experiment = "DT";
+//            experiment = "RandForest";
+//            experiment = "SVM";
+//            experiment = "MLP";
+//            experiment = "RotationForest";
+//            experiment = "multivariateConv";
+//            experiment = "NN_ED_D";
+//            experiment = "NN_ED_I";
+//            experiment = "NN_DTW_A";
+//            experiment = "NN_DTW_D";
+//            experiment = "NN_DTW_I";
+            
+            
             expId = 0;
             windowsSearchF = false;
             overallStatsF = false;
@@ -227,11 +255,7 @@ public class ProjectMain {
             mlpNormaliseF = false;
             mlpCvLearnRate = false;
             mlpCvMomenumRate = false;
-            mlpCvEpoch = false;
-            
-            // Rotation forest variable
-            
-            
+            mlpCvEpoch = false; 
         }       
       
         
@@ -242,9 +266,6 @@ public class ProjectMain {
             case '2' :
                 dataSetTypes = new String[]{"1000InstPerClass_LCdata"};
                 break;
-            case '3' :
-                dataSetTypes = new String[]{"BinaryLC"};
-                break;
             default : 
                 throw new Exception("No dataset types was selected");
         }
@@ -252,7 +273,6 @@ public class ProjectMain {
         switch (experiment) {
             case "NNED" :
             case "NNDTW":
-            case "NewNNDTW":
                 NNexperiment(datasetDir,outputDir,dataSetTypes,datasetName,standardiseF,clusterF,outputF,experiment,expId,windowsSearchF);
                 break;
             case "MeansC" :
@@ -301,7 +321,6 @@ public class ProjectMain {
             case "NN_DTW_A" :
             case "NN_DTW_D" :
             case "NN_DTW_I" :
-            case "MultShapeletTransformC" : 
                 multivariateExps(datasetDir,outputDir,dataSetTypes,datasetName,
                         standardiseF,clusterF,outputF,experiment,expId);
                 break;
@@ -311,6 +330,7 @@ public class ProjectMain {
         }
     }
     
+    // Multivariate classifiers
     public static void multivariateExps(String datasetDir, String outputDir,
             String [] datasetTypes,String datasetName, boolean standardiseF,
             boolean clusterF, boolean outputF, String cId, int expId) throws Exception {
@@ -328,16 +348,10 @@ public class ProjectMain {
                 c= new NN_DTW_D();
             else if (cId.compareTo("NN_DTW_I") == 0)
                 c = new NN_DTW_I();
-            else if (cId.compareTo("MultShapeletTransformC") == 0)
-                c = new MultivariateShapeletTransformClassifier();
             
             Experiments exp = new Experiments(datasetDir, datasetTypes[i],datasetName,outputDir,clusterF,outputF);
-            exp.samplingExp(c, cId, expId, standardiseF);
-            
+            exp.samplingExp(c, cId, expId, standardiseF); 
         }
- 
-
-
     }
 
     /**
@@ -363,25 +377,17 @@ public class ProjectMain {
                 c = new ED1NN(standardiseF);
             } else if (expType.compareTo("NNDTW")==0) {
                 c  = new DTW1NN(windSearchF,standardiseF);
-            } else if (expType.compareTo("NewNNDTW")==0) {
-                c  = new NewDTW1NN(windSearchF,standardiseF);
             } else {
                 throw new Exception("NN classifier specified is not implemented");
             }
             
             Experiments exp = new Experiments(datasetDir, datasetType[i],datasetName,outputDir, cluster,outputF);
-            //exp.runExp(c,expId);
-//            exp.samplingExp(c, expId);
-            
-            if (datasetType.length > 1) {
-                exp.runExp(c,expId);
-            } else 
-                exp.samplingExp(c, expId);
-            
+            exp.samplingExp(c, expId);
         }
         
     }
 
+    // Method to run experiments with statistical classifiers
     private static void StatisticClassifiers(String datasetDir, String outputDir,
             String[] dataSetTypes, String datasetName, boolean standardiseF, boolean clusterF, 
             boolean outputF, String experiment, int expId, boolean overallStatsF) throws ClassIndexMismatchException, Exception {
@@ -426,15 +432,12 @@ public class ProjectMain {
                 c = new StatsEnsembleClassifier(9, 10, 23, overallStatsF, standardiseF, new StatsClassifier[]{meanC,minMaxC,stdC});//,minMaxC,stdC});
             }
             Experiments exp = new Experiments(datasetDir, dataSetTypes[i],datasetName,outputDir, clusterF, outputF);
-            //exp.runExp(c,expId);
-//            exp.samplingExp(c, expId);
-            
 
             exp.samplingExp(c, expId);
-            
         }
     }
 
+    // Method to run experiments with Decision tree
     private static void DTClassifier(String datasetDir, String outputDir, 
             String[] dataSetTypes, String datasetName, 
             boolean standardiseF, boolean clusterF, boolean outputF, 
@@ -448,9 +451,9 @@ public class ProjectMain {
             Experiments exp = new Experiments(datasetDir, dataSetTypes[i],datasetName,outputDir, clusterF,outputF);
             exp.samplingExp(dt, expId, standardiseF,cvMinNumberPerNode,minNumberStart,minNumberEnd,cvNumbFolds,numbFoldsStart,numbFoldsEnd);
         }
-    
     } 
     
+    // Method to run experiments with Random Forest
     private static void RandomForestClassifier(String datasetDir, String outputDir,
             String [] datasetType, String datasetName, boolean standardiseF,
             boolean clusterF, boolean outputF, String experiment, int expId,
@@ -464,6 +467,7 @@ public class ProjectMain {
         }
     }
     
+    // Method to run experiments with Support Vector Machine
     private static void SMOClassifier(String datasetDir, String outputDir,
             String [] datasetType, String datasetName, boolean standardiseF,
             boolean clusterF, boolean outputF, String experiment, int expId,
@@ -481,6 +485,7 @@ public class ProjectMain {
         }
     }
     
+    // Method to run experiments with Multilayer Perceptron
     private static void MLPClassifier(String datasetDir, String outputDir,
             String [] datasetType, String datasetName, boolean standardiseF,
             boolean clusterF, boolean outputF, String experiment, int expId,
@@ -495,6 +500,7 @@ public class ProjectMain {
         }
     }
 
+    // Method to run experiments with Rotation Forest
     private static void RotationForestExps(String datasetDir, String outputDir, 
             String[] dataSetTypes, String datasetName, boolean standardiseF, 
             boolean clusterF, boolean outputF, int expId) throws Exception {

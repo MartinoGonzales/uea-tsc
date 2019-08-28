@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Implementation of 1 Nearest neighbour classifier
  */
 package MScMartinoCode;
 
@@ -14,16 +12,16 @@ import weka.core.Instances;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public abstract class NNClassifiers implements Classifier {
 
 ////////////////////////////////// Variables \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-protected Instances trainData;
-protected String clsID; // classifier ID
-protected Utilities.StandardiseDataset standardise;
-protected boolean isStandardise;
+    protected Instances trainData;
+    protected String clsID; // classifier ID
+    protected Utilities.StandardiseDataset standardise;
+    protected boolean isStandardise;
 
 
 ///////////////////////////////// Methods \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

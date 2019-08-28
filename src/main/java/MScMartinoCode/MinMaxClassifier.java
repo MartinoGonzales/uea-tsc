@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Implementation for MinMax classifier
  */
 package MScMartinoCode;
 
@@ -13,14 +11,13 @@ import weka.core.Instances;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class MinMaxClassifier extends StatsClassifier implements Serializable {
     
     private MinClassifiers minC;
     private MaxClassifier maxC;
     private StatsClassifier [] ensamble;
-    
     
     /**
      * Default classifiers that build same min and max classifiers with the 
@@ -74,22 +71,7 @@ public class MinMaxClassifier extends StatsClassifier implements Serializable {
 
     @Override
     public double classifyInstance(Instance instance) throws Exception {   
-//        double [] temp = new double[instance.numClasses()];
-//        if (this.ensamble == null) {
-//            double [] minCdistances = this.minC.getClassDistances(instance);
-//            double [] maxCdistances = this.maxC.getClassDistances(instance);
-//           
-//            for (int cls = 0; cls < temp.length; cls++) {
-//                temp [cls] = minCdistances[cls] + maxCdistances[cls];
-//            }   
-//        } else {
-//            for (int i = 0; i < this.ensamble.length; i++) {
-//                double [] distances = this.ensamble[i].getClassDistances(instance);
-//                for (int cls = 0; cls < temp.length; cls++) {
-//                    temp [cls] += distances[cls];
-//                }   
-//            }
-//        }
+
         double [] temp = this.getClassDistances(instance);
         // Find the minimum distance to a class
         int minIndex = 0;

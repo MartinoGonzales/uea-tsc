@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Standard deviation classifier implementation 
  */
 package MScMartinoCode;
 
@@ -15,7 +13,7 @@ import weka.core.Stats;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class StandardDeviationClassifier extends StatsClassifier implements Serializable {
 
@@ -106,23 +104,7 @@ public class StandardDeviationClassifier extends StatsClassifier implements Seri
 
     @Override
     public double classifyInstance(Instance instance) throws Exception {
-//        if (this.isStandardise)
-//            instance = this.standardise.standardiseInstance(instance);
-//        
-//        double [] stdDists = new double[instance.numClasses()];
-//        for (int atr = 0; atr < instance.numAttributes()-1; atr++) {
-//            int featIndex = atr % this.noFeat;
-//            int dayIndex  = atr / this.noFeat;
-//            
-//            for (int cls = 0; cls < instance.numClasses(); cls++) {
-//                double dist = 0;
-//                if (this.isOverall)
-//                    dist = (instance.value(atr) - this.stdMatrix[cls][featIndex][0]) * (instance.value(atr) - this.stdMatrix[cls][featIndex][0]);
-//                else 
-//                    dist = (instance.value(atr) - this.stdMatrix[cls][featIndex][dayIndex]) * (instance.value(atr) - this.stdMatrix[cls][featIndex][dayIndex]);
-//                stdDists[cls] += dist;
-//            }
-//        }
+
         double [] stdDists = this.getClassDistances(instance);
         // Find the minimum distance to a class
         int minIndex = 0;

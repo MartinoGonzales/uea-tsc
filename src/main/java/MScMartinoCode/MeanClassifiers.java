@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Implementation of Mean classifier
  */
 package MScMartinoCode;
 
@@ -19,7 +17,7 @@ import weka.core.converters.ConverterUtils.DataSink;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class MeanClassifiers extends StatsClassifier implements Serializable {
     
@@ -83,47 +81,11 @@ public class MeanClassifiers extends StatsClassifier implements Serializable {
         }
     }
 
-//    @Override
-//    public double classifyInstance(Instance instance) throws Exception {
-//        
-//        if (this.isStandardise)
-//            instance = this.standardise.standardiseInstance(instance);
-//        
-//        // Iterate throught each Attribute of the instance
-//        double [] meanDist = new double[instance.numClasses()];
-//        for (int atr = 0; atr < instance.numAttributes()-1; atr++) {
-//            int featIndex = atr % this.noFeat;
-//            int dayIndex  = atr / this.noFeat;
-//            // For each attribute calculate the distance to each class
-//            for (int cls = 0; cls < instance.numClasses(); cls++) {
-//                double dist =0;
-//                if (this.isOverall)
-//                    dist = (instance.value(atr) - this.meansMatrix[cls][featIndex][0]) * (instance.value(atr) - this.meansMatrix[cls][featIndex][0]);
-//                else 
-//                    dist = (instance.value(atr) - this.meansMatrix[cls][featIndex][dayIndex]) * (instance.value(atr) - this.meansMatrix[cls][featIndex][dayIndex]);
-//                meanDist[cls] += dist;
-//            }
-//        }
-//        // Average the distances by dividing the number of days
-//        //for (int i = 0; i < meanDist.length; i++) {
-//        //    meanDist[i] /= this.noDays; 
-//        //}
-//        
-//        
-//        // Find the minimum distance to a class
-//        int minIndex = 0;
-//        for (int i = 1; i < meanDist.length; i++) {
-//            if (meanDist[i] < meanDist[minIndex])
-//                minIndex = i;
-//        }
-//        return minIndex;
-//    }
     
         @Override
     public double classifyInstance(Instance instance) throws Exception {
         
         double [] meanDist = this.getClassDistances(instance);
-        
         
         // Find the minimum distance to a class
         int minIndex = 0;
@@ -172,5 +134,4 @@ public class MeanClassifiers extends StatsClassifier implements Serializable {
         }
         return meanDist;
     }
-    
 }

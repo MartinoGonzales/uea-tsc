@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Utilities Function 
  */
 package MScMartinoCode;
 
@@ -19,7 +17,7 @@ import weka.core.Instances;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class Utilities {
     
@@ -28,20 +26,17 @@ public class Utilities {
         FileReader r;
         
         try {
-
             r = new FileReader(dataPath + ".arff");
             data = new Instances(r);
             data.setClassIndex(data.numAttributes()-1);
-            
         } catch (IOException e) {
-            
             System.out.println("Cannot open the file at path " + dataPath + "\n");
             System.out.println("Exception Thrown" + e.getMessage());
             System.exit(0);
-            
         }
         return data;
     }
+  
     /**
      * Method to print a confusion matrix to the console
      * @param matrix the confusion matrix to print 
@@ -65,6 +60,7 @@ public class Utilities {
         }
     }
     
+    // Function to get a sub set of dataset with only instances of a class
     public static Instances subSet(Instances data,int classIndex) {
         Instances temp = new Instances(data, 0);
         for (Instance inst : data) {
@@ -74,6 +70,7 @@ public class Utilities {
         return temp;
     }
     
+    // Class to stndardise the dataset
     public static class StandardiseDataset {
       
       private double [] means;
@@ -132,23 +129,14 @@ public class Utilities {
         for (int atr = 0; atr < inst.numAttributes()-1; atr++) {
             
             double standardisedValue;
-            
-            //if (std[atr] == 0) {
-            //    standardisedValue = 0;
-                
-            //} else {
-                standardisedValue = (inst.value(atr) - means[atr]) / std[atr];
-                
-            //}
-            
+            standardisedValue = (inst.value(atr) - means[atr]) / std[atr];
             temp.setValue(atr, standardisedValue);
         }
         return temp;
       }
-      
   }
     
-    
+    // Class to standardise multivariate dataset
     public static class StandardiseMultivariateDataset 
     {
               
@@ -214,8 +202,6 @@ public class Utilities {
                     std[feat][val] /= Math.sqrt(std[feat][val]);
                 }
             }
-          
-
       }
       
       public Instances standardiseInstances(Instances data) {
@@ -237,39 +223,13 @@ public class Utilities {
                     }
                 }
           }
-          // Standardise the data
-//          Instances temp  = new Instances(data);
-//          int count = 0;
-//          for (Instance inst : data) {
-//              for (int atr = 0; atr < inst.numAttributes()-1; atr++) {
-//                    double standardiseValue = (inst.value(atr) - means[atr]) / std[atr];
-//                    temp.get(count).setValue(atr, standardiseValue);
-//              }
-//              count++;
-//          }
-//          return temp;
             return temp;
       }
       
+      // Non implemented yet as for the multivariate representation 
+      // we standardise the all dataset 
       public Instance standardiseInstance(Instance inst) {
-//        Instance temp = inst;
-//        
-//        for (int atr = 0; atr < inst.numAttributes()-1; atr++) {
-//            
-//            double standardisedValue;
-//            
-//            //if (std[atr] == 0) {
-//            //    standardisedValue = 0;
-//                
-//            //} else {
-//                standardisedValue = (inst.value(atr) - means[atr]) / std[atr];
-//                
-//            //}
-//            
-//            temp.setValue(atr, standardisedValue);
-//        }
-//        return temp;
-return null;
+          return null;
       }    
     }
     
@@ -318,8 +278,6 @@ return null;
           System.out.println("ERROR : " + ex.getMessage());
       } catch (IOException ex) {
           System.out.println("ERROR : " + ex.getMessage());
-      }
-        
-        
+      } 
     }
 }

@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Implementation of Nearest Neighbour classifier with DTW distance metric
  */
 package MScMartinoCode;
 
@@ -13,7 +11,7 @@ import weka.core.Instances;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class DTW1NN extends NNClassifiers implements Serializable  {
 
@@ -60,18 +58,15 @@ public class DTW1NN extends NNClassifiers implements Serializable  {
             this.trainData = new Instances(data);    
         }
         
-        
-        
         // Search for hte best warping windows
         if(this.windowF) {
             // Intitialise FastWWS instances. Not my class
             FastWWS windowSearcher = new FastWWS();
             try {
                 // Build FastWWS
-                //windowSearcher.buildClassifier(data);
                 windowSearcher.buildClassifier(this.trainData);
                 // Assugb the best windows found
-                this.windowSize = windowSearcher.getBestWin();// == 0 ? 1 : windowSearcher.getBestWin();//(windowSearcher.getBestWin() == 0) ? 1 : windowSearcher.getBestWin();
+                this.windowSize = windowSearcher.getBestWin();
             } catch (Exception e) {
                 System.err.println("ERROR : " + e.getMessage());
             }
@@ -89,7 +84,6 @@ public class DTW1NN extends NNClassifiers implements Serializable  {
            throw new ClassIndexMismatchException("The class value is not the last of the attributes");
         }
         
-        
         // Initialise variable needed
         double minDist;
         int n = first.numAttributes()-1;
@@ -98,11 +92,9 @@ public class DTW1NN extends NNClassifiers implements Serializable  {
         
         if (this.windowF) {
             // In case it use a wapring windows
-
             // Get the windows
             int windowSize = (int) this.windowSize;
 
-            
             // Set the boundry element of the windows to the max value
             int start, end;
             for (int i = 0; i < n; i++) {
@@ -182,32 +174,26 @@ public class DTW1NN extends NNClassifiers implements Serializable  {
                     minDist = matrix[i][j-1];
                     if (matrix[i-1][j] < minDist) {
                         minDist = matrix[i-1][j];
-                        
                     }
                     if (matrix[i-1][j-1] < minDist) {
-                        minDist = matrix[i-1][j-1];
-                        
+                        minDist = matrix[i-1][j-1]; 
                     }
                     
                     double distance = (first.value(i) - second.value(j)) * (first.value(i) - second.value(j));
                     matrix[i][j] = minDist + distance;
                     
                     if (matrix[i][j] > abandonValue) {
-                        matrix[i][j] = Double.MAX_VALUE;
-                        
+                        matrix[i][j] = Double.MAX_VALUE; 
                     } else {
-                        abandon = false;
-                        
+                        abandon = false;  
                     }
                 }
-                
+
                 if (abandon) {
-                    break;
-                    
+                    break;   
                 }
             }
-            
-            
+                       
             if (abandon) {
                 return Double.MAX_VALUE;
             }

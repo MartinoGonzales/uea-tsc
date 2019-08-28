@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Class to run experiments and write results to files
  */
 package MScMartinoCode;
 
@@ -23,7 +21,7 @@ import weka.core.SelectedTag;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class Experiments {
     
@@ -61,115 +59,109 @@ public class Experiments {
     
 //////////////////////////////////// Methods \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     
-    public void runExp(NNClassifiers c, int expId) throws ClassIndexMismatchException {
-        
-        // Load the train and test data
-        Instances train = null;
-        Instances test  = null;
-        if (this.isCluster) {
-            // Run on cluster
-            train = Utilities.loadData(this.datasetDir + "/" + this.dataType + "/LC_train");
-            test  = Utilities.loadData(this.datasetDir + "/" + this.dataType + "/LC_test");
-        } else {
-            // Run locally
-            train = Utilities.loadData(this.datasetDir + "//" + this.dataType + "//LC_train");
-            test  = Utilities.loadData(this.datasetDir + "//" + this.dataType + "//LC_test");
-        }
-        
-        
-        if (this.isOutputFile) {
-            // Print output to file 
-            
-            // Create and initialise the output file
-            File file = null;
-            OutFile outF = null;
-            
-            if (this.isCluster) {
-                file = new File(this.outputDir + "/" + this.dataType);
-                file.mkdirs();
-                outF = new OutFile(this.outputDir + "/" + this.dataType + "/" + c.clsID + "_" + expId + ".csv");
-            } else {
-                // Run locally 
-                file = new File(this.outputDir + "\\" + this.dataType);
-                file.mkdirs();
-                outF = new OutFile(this.outputDir + "\\" + this.dataType + "\\" + c.clsID + "_" + expId + ".csv" );
-            }
-            
-            outF.writeLine(this.dataType + "," + c.clsID + ",test");
-            outF.writeLine("noParams");
-            
-            // Build classifiers and take time 
-            Instant start = Instant.now();
-            c.buildClassifier(train);
-            Instant end = Instant.now();
-            long timeTakenBuild = Duration.between(start, end).toMillis();
-            
-            StringBuilder strResults = new StringBuilder();
-            
-            // Classify test set
-            int correctGuess = 0;
-            start = Instant.now();
-            for (Instance inst : test) {
-                double guess = c.classifyInstance(inst);
-                if (guess == inst.classValue())
-                    correctGuess++;
-                
-//                // Append class value and predicted one to file 
-//                strResults.append(inst.classValue()).append(",").append(guess).append(",,");
-//                // Get the distribution for instance and append it to file
-//                double [] distribution = c.distributionForInstance(inst);
-//                for (int i = 0; i < distribution.length; i++) {
-//                    strResults.append(distribution[i]).append(",");
-//                }
+//    /**
+//     * Run experiment with Nearest Neighbour classifier.
+//     * @param c the classifier
+//     * @param expId the partitioning ID
+//     * @throws ClassIndexMismatchException 
+//     */
+//    public void runExp(NNClassifiers c, int expId) throws ClassIndexMismatchException {
+//        // Load the train and test data
+//        Instances train = null;
+//        Instances test  = null;
+//        if (this.isCluster) {
+//            // Run on cluster
+//            train = Utilities.loadData(this.datasetDir + "/" + this.dataType + "/LC_train");
+//            test  = Utilities.loadData(this.datasetDir + "/" + this.dataType + "/LC_test");
+//        } else {
+//            // Run locally
+//            train = Utilities.loadData(this.datasetDir + "//" + this.dataType + "//LC_train");
+//            test  = Utilities.loadData(this.datasetDir + "//" + this.dataType + "//LC_test");
+//        }
+//        
+//        if (this.isOutputFile) {
+//            // Print output to file 
+//            // Create and initialise the output file
+//            File file = null;
+//            OutFile outF = null;
+//            
+//            if (this.isCluster) {
+//                file = new File(this.outputDir + "/" + this.dataType);
+//                file.mkdirs();
+//                outF = new OutFile(this.outputDir + "/" + this.dataType + "/" + c.clsID + "_" + expId + ".csv");
+//            } else {
+//                // Run locally 
+//                file = new File(this.outputDir + "\\" + this.dataType);
+//                file.mkdirs();
+//                outF = new OutFile(this.outputDir + "\\" + this.dataType + "\\" + c.clsID + "_" + expId + ".csv" );
+//            }
+//            
+//            outF.writeLine(this.dataType + "," + c.clsID + ",test");
+//            outF.writeLine("noParams");
+//            
+//            // Build classifiers and take time 
+//            Instant start = Instant.now();
+//            c.buildClassifier(train);
+//            Instant end = Instant.now();
+//            long timeTakenBuild = Duration.between(start, end).toMillis();
+//            
+//            StringBuilder strResults = new StringBuilder();
+//            
+//            // Classify test set
+//            int correctGuess = 0;
+//            start = Instant.now();
+//            for (Instance inst : test) {
+//                double guess = c.classifyInstance(inst);
+//                if (guess == inst.classValue())
+//                    correctGuess++;
 //                
-//                strResults.append("\n");
-            }
-            end = Instant.now();
-            long timeTakenClassify = Duration.between(start, end).toMillis();
-            
-            // Write everything to file 
-            outF.writeLine("Accuracy," + (double)correctGuess/(double)test.size());
-            outF.writeLine("Time Taken Build," + timeTakenBuild);
-            outF.writeLine("Time Taken Classify," + timeTakenClassify);
-            outF.closeFile();
-            
-            
-        } else {
-            // Print output to console
-            System.out.println("Data Type used : " + this.dataType);
-            System.out.println("Classifier ID : " + c.clsID);
-            
-            System.out.print("Building classifier ...");
-            Instant start = Instant.now();
-            c.buildClassifier(train);
-            Instant end = Instant.now();
-            System.out.println("done");
-            
-            // calculate time taken to build classifier
-            long timeTakenBuild = Duration.between(start, end).toMillis();
-            
-            // Classify test set
-            int correctCount = 0;
-            System.out.print("Start classifing new data ...");
-            start = Instant.now();
-            for (Instance inst : test) {
-                double guess = c.classifyInstance(inst);
-                if (guess == inst.classValue())
-                    correctCount++;
-            }
-            end = Instant.now();
-            System.out.println("done");
-            long timeTakenClassify = Duration.between(start, end).toMillis();
-            
-            System.out.println("Accuracy : " + (double)correctCount/(double)test.size());
-            System.out.println("Time taken to build classifier : " + timeTakenBuild);
-            System.out.println("Time taken to classify new data : " + timeTakenClassify);
-            System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
-        }
-    }
+//            }
+//            end = Instant.now();
+//            long timeTakenClassify = Duration.between(start, end).toMillis();
+//            
+//            // Write everything to file 
+//            outF.writeLine("Accuracy," + (double)correctGuess/(double)test.size());
+//            outF.writeLine("Time Taken Build," + timeTakenBuild);
+//            outF.writeLine("Time Taken Classify," + timeTakenClassify);
+//            outF.closeFile();
+//            
+//            
+//        } else {
+//            // Print output to console
+//            System.out.println("Data Type used : " + this.dataType);
+//            System.out.println("Classifier ID : " + c.clsID);
+//            
+//            System.out.print("Building classifier ...");
+//            Instant start = Instant.now();
+//            c.buildClassifier(train);
+//            Instant end = Instant.now();
+//            System.out.println("done");
+//            
+//            // calculate time taken to build classifier
+//            long timeTakenBuild = Duration.between(start, end).toMillis();
+//            
+//            // Classify test set
+//            int correctCount = 0;
+//            System.out.print("Start classifing new data ...");
+//            start = Instant.now();
+//            for (Instance inst : test) {
+//                double guess = c.classifyInstance(inst);
+//                if (guess == inst.classValue())
+//                    correctCount++;
+//            }
+//            end = Instant.now();
+//            System.out.println("done");
+//            long timeTakenClassify = Duration.between(start, end).toMillis();
+//            
+//            System.out.println("Accuracy : " + (double)correctCount/(double)test.size());
+//            System.out.println("Time taken to build classifier : " + timeTakenBuild);
+//            System.out.println("Time taken to classify new data : " + timeTakenClassify);
+//            System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
+//        }
+//    }
     
-    public void samplingExp(NNClassifiers c, int expId) throws ClassIndexMismatchException {
-        
+    // Method to run experiment with Nearest neighbour 
+    public void samplingExp(NNClassifiers c, int expId) throws ClassIndexMismatchException {     
         if (this.isOutputFile) {
             // Load the data
             System.out.print("Loading data...");
@@ -215,35 +207,14 @@ public class Experiments {
             long timeTakenBuild = Duration.between(start, end).toMillis();
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
-            // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
+            
             start = Instant.now();
-//            for (Instance inst : test) {
-////                System.out.println(tempCount);
-////                tempCount++;
-//                double guess = c.classifyInstance(inst);
-//                if (guess == inst.classValue())
-//                    correctGuess++;
-//                
-////                // Append class value and predicted one to file 
-////                strResults.append(inst.classValue()).append(",").append(guess).append(",,");
-////                // Get the distribution for instance and append it to file
-////                double [] distribution = c.distributionForInstance(inst);
-////                for (int i = 0; i < distribution.length; i++) {
-////                    strResults.append(distribution[i]).append(",");
-////                }
-////                
-////                strResults.append("\n");
-//            }
-
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
                 classLabels.writeString(",");
-                
-                //System.out.println(inst);
                 guesses[inst] = (int) c.classifyInstance(test.get(inst));
                 predictedLabels.writeDouble(guesses[inst]);
                 predictedLabels.writeString(",");
@@ -262,8 +233,7 @@ public class Experiments {
             // Write everything to file 
             if (c.clsID.compareTo("1NNDTW_W")==0) 
                 outF.writeLine("Window Size : " + ((DTW1NN)c).getWindowSize());
-            else if (c.clsID.compareTo("New1NNDTW_W")==0) 
-                outF.writeLine("Window Size : " + ((NewDTW1NN)c).getWindowsSizeString());
+
             outF.writeLine("Accuracy," + (double)correctGuess/(double)test.size());
             outF.writeLine("F-Score," + Fscore);
             outF.writeLine("Time Taken Build," + timeTakenBuild);
@@ -274,12 +244,12 @@ public class Experiments {
             classLabels.closeFile();
             predictedLabels.closeFile();
         } else {
-            // To Do 
+            // TODO - run locally 
         }
     }
     
+    // Run Experiment with Statistical Classifiers
     public void samplingExp(StatsClassifier c, int expId) throws ClassIndexMismatchException, Exception {
-
         if (this.isOutputFile) {
             // Load the data
             System.out.print("Loading data...");
@@ -288,14 +258,7 @@ public class Experiments {
                 data = Utilities.loadData(this.datasetDir + "/" + this.dataType + "/" +  this.datasetName);
             else
                 data = Utilities.loadData(this.datasetDir + "\\" + this.dataType + "\\" +  this.datasetName);
-                
-            
-            // standardise data
-//            if (this.isStandardise) {
-//                data = Utilities.StandardiseDataset.standardiseInstances(data);
-//            }
-//            
-            
+  
             Instances [] temp = InstanceTools.resampleInstances(data, expId, 0.5);
             Instances train = temp[0];
             Instances test  = temp[1];
@@ -320,7 +283,6 @@ public class Experiments {
                 classLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.getClsID() + "\\" + standDir + "\\" + c.getClsID() + "_cLabels_" + expId + ".csv");
                 predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + c.getClsID() + "\\" + standDir + "\\" + c.getClsID() + "_predLabels_" + expId + ".csv");
             }
-            
 
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
@@ -330,29 +292,10 @@ public class Experiments {
             long timeTakenBuild = Duration.between(start, end).toMillis();
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
-            // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
             start = Instant.now();
-//            for (Instance inst : test) {
-////                System.out.println(tempCount);
-////                tempCount++;
-//                double guess = c.classifyInstance(inst);
-//                if (guess == inst.classValue())
-//                    correctGuess++;
-//                
-////                // Append class value and predicted one to file 
-////                strResults.append(inst.classValue()).append(",").append(guess).append(",,");
-////                // Get the distribution for instance and append it to file
-////                double [] distribution = c.distributionForInstance(inst);
-////                for (int i = 0; i < distribution.length; i++) {
-////                    strResults.append(distribution[i]).append(",");
-////                }
-////                
-////                strResults.append("\n");
-//            }
 
             for (int inst = 0; inst < test.numInstances(); inst++) {
                 classLabels.writeDouble(test.get(inst).classValue());
@@ -383,10 +326,11 @@ public class Experiments {
             predictedLabels.closeFile();
             
         } else {
-            // To Do 
+            // TODO - run locally
         }
     }
     
+    // Run experiments with Decision tree
     public void samplingExp(J48 dt, int expId,boolean standardiseF,
             boolean cvMinNumberPerNode, int minNumberStart, int minNumberEnd,
             boolean cvNumbFolds, int numbFoldsStart,int numbFoldsEnd) throws Exception {
@@ -408,18 +352,6 @@ public class Experiments {
             else
                 data = Utilities.loadData(this.datasetDir + "\\" + this.dataType + "\\" +  this.datasetName);
                 
-            
-                
-//            if (standardiseF) {
-//                standDir = "Standardised";
-//                Utilities.StandardiseDataset standInst = new Utilities.StandardiseDataset(data);
-//                data = standInst.standardiseInstances(data);
-//            }
-//            
-            
-            //Instances [] temp = InstanceTools.resampleInstances(data, expId, 0.5);
-            //Instances train = temp[0];
-            //Instances test  = temp[1];
             System.out.println("done");
  
             File file = null; 
@@ -440,8 +372,7 @@ public class Experiments {
                 predictedLabels = new OutFile(this.outputDir + "\\" + this.datasetName + "\\" + cId + "\\" + standDir + "\\" + cId + "_predLabels_" + expId + ".csv");
 
             }
-            
-
+           
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
             Instant start = Instant.now();
@@ -468,8 +399,6 @@ public class Experiments {
             long timeTakenBuild = Duration.between(start, end).toMillis();
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
-            // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
@@ -507,10 +436,11 @@ public class Experiments {
             classLabels.closeFile();
             predictedLabels.closeFile();
         } else {
-            // To Do 
+            // TODO - run locally
         }
     }
     
+    // Run experiments with Random Forest
     public void samplingExp(RandomForest rf, int expId, boolean standardiseF,
             boolean cvTreeDepth, int startDepth, int endDepth,
             boolean cvNumTrees,int startTrees, int endTrees, boolean cvNumFeatures) throws Exception {
@@ -556,8 +486,7 @@ public class Experiments {
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
             Instant start = Instant.now();
-            // I put standardisation here since in other experiments 
-            // it was done inside the classifiers
+
             if (standardiseF) {
                 Utilities.StandardiseDataset standInst = new Utilities.StandardiseDataset(data);
                 data = standInst.standardiseInstances(data);
@@ -567,7 +496,6 @@ public class Experiments {
             Instances test  = temp[1];
             // Carry out a 10-fold cross validation  to set best min number of 
             // object per node if required
-            // For the maximum Depth of trees
             if (cvTreeDepth) {
                 rf.setMaxDepth(rfCvTreeDepth(rf,startDepth,endDepth,train) + startDepth);  
             }
@@ -583,7 +511,6 @@ public class Experiments {
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
             // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
@@ -622,15 +549,14 @@ public class Experiments {
             classLabels.closeFile();
             predictedLabels.closeFile();
         }
-
     }
     
+    // Run experiment with Support Vector Machine
     void samplingExp(SMO svm, int expId, boolean standardiseF,
             boolean cvNumFoldsF, int startFold, int endFold, boolean cvC,
             boolean cvEpsilonF) throws Exception {
         String standDir = (standardiseF) ? "Standardise" : "NoStandardised";
         String cId = "SVM";
-        
         
         if (svm.getFilterType().toString().compareTo("0") == 0)
             cId += "_Normalized";
@@ -643,7 +569,6 @@ public class Experiments {
         
         System.out.println("Running Classifier : " + cId);
 
-        
         if (this.isOutputFile) {
             // Load the data
             System.out.print("Loading data...");
@@ -654,7 +579,6 @@ public class Experiments {
                 data = Utilities.loadData(this.datasetDir + "\\" + this.dataType + "\\" +  this.datasetName);
 
             System.out.println("done");
- 
             File file = null; 
             OutFile outF = null;
             OutFile classLabels = null;
@@ -676,8 +600,7 @@ public class Experiments {
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
             Instant start = Instant.now();
-            // I put standardisation here since in other experiments 
-            // it was done inside the classifiers
+
             if (standardiseF) {
                 Utilities.StandardiseDataset standInst = new Utilities.StandardiseDataset(data);
                 data = standInst.standardiseInstances(data);
@@ -701,7 +624,6 @@ public class Experiments {
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
             // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
@@ -743,7 +665,7 @@ public class Experiments {
         }
     }
     
-    
+    // Run experiments with Multilayer perceptron 
     void samplingExp(MultilayerPerceptron mlp, int expId, boolean standardiseF,
             boolean cvLearnRate, boolean cvMomenumRate, boolean cvEpoch) throws Exception {
         String standDir = (standardiseF) ? "Standardise" : "NoStandardised";
@@ -791,8 +713,6 @@ public class Experiments {
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
             Instant start = Instant.now();
-            // I put standardisation here since in other experiments 
-            // it was done inside the classifiers
             if (standardiseF) {
                 Utilities.StandardiseDataset standInst = new Utilities.StandardiseDataset(data);
                 data = standInst.standardiseInstances(data);
@@ -815,7 +735,6 @@ public class Experiments {
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
             // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
@@ -858,11 +777,11 @@ public class Experiments {
         }
     }
     
+    // Run experiments Rotation Forest
     void samplingExp(RotationForest c, int expId, boolean standardiseF) throws Exception {
         String standDir = (standardiseF) ? "Standardise" : "NoStandardised";
         String cId = "RotationForest";
 
-        
         System.out.println("Running Classifier : " + cId);
         if (this.isOutputFile) {
             // Load the data
@@ -896,8 +815,7 @@ public class Experiments {
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
             Instant start = Instant.now();
-            // I put standardisation here since in other experiments 
-            // it was done inside the classifiers
+
             if (standardiseF) {
                 Utilities.StandardiseDataset standInst = new Utilities.StandardiseDataset(data);
                 data = standInst.standardiseInstances(data);
@@ -905,16 +823,12 @@ public class Experiments {
             Instances [] temp = InstanceTools.resampleInstances(data, expId, 0.5);
             Instances train = temp[0];
             Instances test  = temp[1];
-            // Carry out a 10-fold cross validation  to set best min number of 
-            // object per node if required
-
             c.buildClassifier(train);
             Instant end = Instant.now();
             long timeTakenBuild = Duration.between(start, end).toMillis();
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
             // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
@@ -950,6 +864,7 @@ public class Experiments {
         }
     }
     
+    // Run experiments with the multivariate classifiers
     void samplingExp(AbstractClassifier c, String cId, int expId, boolean standardiseF) throws Exception {
         String standDir = (standardiseF) ? "Standardise" : "NoStandardised";
         System.out.println("Running Classifier : " + cId);
@@ -986,8 +901,6 @@ public class Experiments {
             // Build classifiers and take time 
             System.out.print("Building Classifier...");
             Instant start = Instant.now();
-            // I put standardisation here since in other experiments 
-            // it was done inside the classifiers
             if (standardiseF) {
                 Utilities.StandardiseMultivariateDataset standInst = new Utilities.StandardiseMultivariateDataset(data);
                 data = standInst.standardiseInstances(data);
@@ -995,8 +908,6 @@ public class Experiments {
             Instances [] temp = InstanceTools.resampleInstances(data, expId, 0.5);
             Instances train = temp[0];
             Instances test  = temp[1];
-            // Carry out a 10-fold cross validation  to set best min number of 
-            // object per node if required
 
             c.buildClassifier(train);
             Instant end = Instant.now();
@@ -1004,7 +915,6 @@ public class Experiments {
             System.out.println("done");
             StringBuilder strResults = new StringBuilder();
             // Classify test set
-//            int tempCount = 0;
             System.out.print("Start classification...");
             int correctGuess = 0;  
             int [] guesses = new int[test.numInstances()];
@@ -1041,7 +951,7 @@ public class Experiments {
         }
     }
     
-    
+    // Method to create confusion matrix
     public static int[][] createConfusionMatrix(Instances train, int [] guesses){
         int [][] matrix = new int[train.numClasses()][train.numClasses()];
         for (int i = 0; i < train.numInstances(); i++) {
@@ -1050,6 +960,7 @@ public class Experiments {
         return matrix;
     }
     
+    // Method to calculate the F score
     public static double calculateFscore(int [][] confMatrix) {
         // Start by calculating the overall precision for each class
         double [] precisions = new double[confMatrix.length];
@@ -1089,6 +1000,7 @@ public class Experiments {
         return 2 * ((overallPrecision * overallRecall) / (overallPrecision + overallRecall));
     }
     
+    // Method to cross-validate the minimum number of instances per node - Decision Tree
     public int dtCvMinNumberPerNode(J48 dt, int minNumberStart, int minNumberEnd, Instances train) throws Exception {
         double [] cvMinNumberAcc = new double[minNumberEnd - minNumberStart + 1];
         // Loop to iterate from Start form End
@@ -1123,6 +1035,7 @@ public class Experiments {
         return indexMax;
     }
 
+    // Cross validation the number of fold - Decision Tree
     public int dtCvNumbOfFolds(J48 dt, int numbFoldsStart,int numbFoldsEnd, Instances train) throws Exception {
         double [] cvNumbFoldsAcc = new double[numbFoldsEnd - numbFoldsStart + 1];
         //Loop to iterate from Start form End
@@ -1157,6 +1070,7 @@ public class Experiments {
         return indexMax;
     }
 
+    // Cross validating the depth of tree - Random Forest
     private int rfCvTreeDepth(RandomForest rf,int startDepth, int endDepth, Instances train) throws Exception {
         double [] cvAccResults = new double[endDepth - startDepth + 1];
         //Loop to iterate from Start form End
@@ -1191,6 +1105,7 @@ public class Experiments {
         return indexMax;
     }
     
+    // Cross validating the number of tree - Random Forest
     public int rfCvNumTrees(RandomForest rf,int start, int end, Instances train) throws Exception {
         double [] cvAccResults = new double[end - start + 1];
         //Loop to iterate from Start form End
@@ -1225,6 +1140,7 @@ public class Experiments {
         return indexMax;
     }
     
+    // Cross validating the number of features - Random Forest
     public int rfCvNumFeatures(RandomForest rf,Instances train) throws Exception {
         double [] cvAccResults = new double[train.numAttributes()];
         //Loop to iterate from Start form End
@@ -1259,6 +1175,7 @@ public class Experiments {
         return indexMax;
     }
 
+    // Cross validating the number of folds - Support Vector Machine
     public int svmCvNumFolds(SMO svm, int start, int end, Instances train) throws Exception {
         double [] cvNumbFoldsAcc = new double[end - start + 1];
         //Loop to iterate from Start form End
@@ -1293,6 +1210,7 @@ public class Experiments {
         return indexMax;
     }
     
+    // Cross validating C - Support Vector Machine
     public double svmCvC(SMO svm, Instances train) throws Exception {
         // Given that we seach from 0.1 to 10 there are 100 values in it 
         // if we increment it every 0.1
@@ -1329,6 +1247,7 @@ public class Experiments {
         return (0.1*indexMax)+0.1;
     }
     
+    // Cross validating Epsilon - Support Vector Machine
     public double svmCvEpsilon(SMO svm, Instances train) throws Exception {
         // Given that we start form 1*10^-12 and get to 10 incrementing it by 10
         // there are 14 values
@@ -1368,6 +1287,7 @@ public class Experiments {
         return temp3;
     }
 
+    // Cross validating learning rate - Multilayer Perceptron 
     public double mlpCvLearnRate(MultilayerPerceptron mlp, Instances train) throws Exception {
         // Given that we start form 0.1 and get to 1 each time incrementing 
         // 0.1 we will have 10 accuracies
@@ -1405,6 +1325,7 @@ public class Experiments {
         return (indexMax/10)+0.1;
     }
     
+    // Corss validating the momentum rate - Multilayer Preceptron 
     public double mlpCvMomentumRate(MultilayerPerceptron mlp, Instances train) throws Exception {
         // Given that we start form 0.1 and get to 1 each time incrementing 
         // 0.1 we will have 10 accuracies
@@ -1442,6 +1363,7 @@ public class Experiments {
         return (indexMax/10)+0.1;
     }
     
+    // Cross validating the number of Epochs - Multilayer Perceptron
     public int mlpCvEpochs(MultilayerPerceptron mlp, Instances train) throws Exception {
         // Given that we start form 0.1 and get to 1 each time incrementing 
         // 0.1 we will have 10 accuracies
@@ -1478,7 +1400,4 @@ public class Experiments {
         }
         return (100 * indexMax)+100;
     }
-
-
-
 }

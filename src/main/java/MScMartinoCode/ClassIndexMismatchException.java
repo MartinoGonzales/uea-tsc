@@ -6,7 +6,7 @@ package MScMartinoCode;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class ClassIndexMismatchException extends Exception{
         public ClassIndexMismatchException(String errMessage) {

@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Code to create Multivariate summary statistics representation
  */
 package MScMartinoCode;
 
@@ -21,7 +19,7 @@ import weka.filters.SimpleBatchFilter;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 
 // Global stats implemented so far mean, standardDeviation, skewness, kurtosis, min, max
@@ -105,8 +103,7 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
 
             // Iterate through each instance in the relational Instances
             for (int j = 0; j < relInst.numInstances(); j++) {
-//                if (i == 42)
-//                    System.out.println("");
+                
                 // Get the Instance 
                 Instance temp = relInst.instance(j);
                 
@@ -154,19 +151,6 @@ public class MultivariateSummaryStats extends SimpleBatchFilter {
                     summaryStats[3] = summaryStats[3]/(tempStd*tempStd*tempStd*tempStd);
                     summaryStats[3] = summaryStats[3]/seriesVal.length;
                 }
-                
-                
-//                summaryStats[2] = summaryStats[2]/(summaryStats[1]*summaryStats[1]*summaryStats[1]);
-//                summaryStats[2] = summaryStats[2]/seriesVal.length;
-//                summaryStats[3] = summaryStats[3]/(summaryStats[1]*summaryStats[1]*summaryStats[1]*summaryStats[1]);
-//                summaryStats[3] = summaryStats[3]/seriesVal.length;
-                
-//                System.out.println("Mean : " + summaryStats[0]);
-//                System.out.println("Std : " + summaryStats[1]);
-//                System.out.println("Skewness : " + summaryStats[2]);
-//                System.out.println("kurtosis : " + summaryStats[3]);                
-//                System.out.println("Min : " + summaryStats[4]);
-//                System.out.println("Max : " + summaryStats[5]);
  
                 // Add summary stats to the relational data
                 dataRel.add(new DenseInstance(1.0,summaryStats));

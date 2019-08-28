@@ -10,12 +10,11 @@ import weka.core.Instances;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class ED1NN extends NNClassifiers implements Serializable {
     
     ///////////////////////////////// Constructor \\\\\\\\\\\\\\\\\\\\\\\\\\\\
-    
     /**
      * Default constructor. 
      */
@@ -24,7 +23,6 @@ public class ED1NN extends NNClassifiers implements Serializable {
         this.isStandardise = standardiseF;
     }
 
-    
     @Override
     public double distance(Instance first, Instance second, double abandonValue) throws ClassIndexMismatchException {
         // Calculate distance between two instances using Euclidean distance 
@@ -47,8 +45,4 @@ public class ED1NN extends NNClassifiers implements Serializable {
         // Return dist
         return dist;
     }
-
-    
-    
-    
 }

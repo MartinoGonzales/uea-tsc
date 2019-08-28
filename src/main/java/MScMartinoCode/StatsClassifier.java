@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Statistical Classifier Implementation
  */
 package MScMartinoCode;
 
@@ -10,7 +8,7 @@ import weka.core.Instance;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public abstract class StatsClassifier implements Classifier {
     

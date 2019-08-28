@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Implementation for Min classifier
  */
 package MScMartinoCode;
 
@@ -15,7 +13,7 @@ import weka.core.Stats;
 
 /**
  *
- * @author fax14yxu
+ * @author Martino Gonzales
  */
 public class MinClassifiers extends StatsClassifier implements Serializable {
     
@@ -66,7 +64,6 @@ public class MinClassifiers extends StatsClassifier implements Serializable {
                 else
                     this.minMatrix[cls][featIndex][dayIndex] = stats.min;
             }
-            
         }
     }
     
@@ -74,27 +71,7 @@ public class MinClassifiers extends StatsClassifier implements Serializable {
 
     @Override
     public double classifyInstance(Instance instance) throws Exception {
-        
-        
-//        if (this.isStandardise)
-//            instance = this.standardise.standardiseInstance(instance);
-//        
-//        double [] dists = new double[instance.numClasses()];
-//        // Iterate through each attribute
-//        for (int atr = 0; atr < instance.numAttributes()-1; atr++) {
-//            int featIndex = atr % this.noFeat;
-//            int dayIndex  = atr / this.noFeat;
-//            
-//            // For each attribute calculate distance to the min 
-//            for (int cls = 0; cls < instance.numClasses(); cls++) {
-//                double dist =0;
-//                if (this.isOverall)
-//                    dist = (instance.value(atr) - this.minMatrix[cls][featIndex][0]) * (instance.value(atr) - this.minMatrix[cls][featIndex][0]);
-//                else 
-//                    dist = (instance.value(atr) - this.minMatrix[cls][featIndex][dayIndex]) * (instance.value(atr) - this.minMatrix[cls][featIndex][dayIndex]);
-//                dists[cls] += dist;
-//            }
-//        }
+
         double [] dists = this.getClassDistances(instance);
 
         // Find the minimum distance to a class

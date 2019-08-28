@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Statistical Ensemble Implementation 
  */
 package MScMartinoCode;
 
@@ -51,12 +49,7 @@ public class StatsEnsembleClassifier extends StatsClassifier implements Serializ
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
-//        Instances temp = new Instances(data);
-//        if (this.isStandardise) {
-//            this.standardise = new Utilities.StandardiseDataset(data);
-//            temp = new Instances(this.standardise.standardiseInstances(data));
-//        }
-        // Iterate through each classifiers in the ensamble and build it
+
         for (StatsClassifier c : this.ensemble) {
             c.buildClassifier(data);
         }
